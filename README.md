@@ -14,8 +14,9 @@ The version of openCV on the TX2 installed by Jetpack is not complete and missin
 cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local \
         -D WITH_CUDA=ON -D CUDA_ARCH_BIN="6.2" -D CUDA_ARCH_PTX="" \
         -D WITH_CUBLAS=ON -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
-	   -D ENABLE_FAST_MATH=ON -D CUDA_FAST_MATH=ON \
+	-D ENABLE_FAST_MATH=ON -D CUDA_FAST_MATH=ON \
         -D ENABLE_NEON=ON -D WITH_LIBV4L=ON -D BUILD_TESTS=OFF \
         -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF \
+	-D ENABLE_PRECOMPILED_HEADERS=OFF \
         -D WITH_QT=ON -D WITH_OPENGL=ON ..
 ```
