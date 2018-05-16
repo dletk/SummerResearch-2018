@@ -1,0 +1,3 @@
+/home/nvidia/Documents/SummerResearch-2018/tutorial/CMakeFiles/edit_cache.dir
+/home/nvidia/Documents/SummerResearch-2018/tutorial/CMakeFiles/rebuild_cache.dir
+/home/nvidia/Documents/SummerResearch-2018/tutorial/CMakeFiles/videoCap.dir

@@ -9,11 +9,18 @@ using namespace std;
 
 int main(int argc, char** argv) {
 	Mat frame;
-	VideoCapture vidCap(0);
-	
+	 	const char* gst =  "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,\
+			format=(string)I420, framerate=(fraction)120/1 ! \
+			nvvidconv flip-method=0 ! video/x-raw, format=(string)BGRx ! \
+			videoconvert ! video/x-raw, format=(string)BGR ! \
+			appsink";
+
+	VideoCapture vidCap(gst);
+
 	while(true) {
 		vidCap.read(frame);
 		imshow("Live", frame);
 		waitKey(5);
 	}
 }
+
