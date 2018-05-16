@@ -12,7 +12,8 @@ int main(int argc, char** argv) {
 	
 	Mat image1 = imread(argv[1]);
 	Mat image2 = imread(argv[2]);
-	
+	image2 = image2(Rect(40,40, 200,200));
+
 	Mat grayImage1, grayImage2;
 	// ORB only works with gray image
 	cv::cvtColor(image1, grayImage1, COLOR_BGR2GRAY);
