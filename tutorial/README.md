@@ -22,7 +22,16 @@ set_target_properties( executable_name PROPERTIES
 
 Usually, we would like to compare the runtime between normal (sequential) openCV version and CUDA version to see the difference and the speedup (if any) of our implementation.
 
-Because CUDA needs to be initialized, it **SHOULD NOT** be timed at the first run. In this run, the initialization of CUDA Rntime API happens implicitly. In addition, some GPU setting will also run to make a configuration for the first usage. Therefore, in order to do a performance measure, the first run of CUDA version should be a dummy trial (or some dummy function) before performing the actual test.
+Because CUDA needs to be initialized, it **SHOULD NOT** be timed at the first run. In this run, the initialization of CUDA Runtime API happens implicitly. In addition, some GPU setting will also run to make a configuration for the first usage. Therefore, in order to do a performance measure, the first run of CUDA version should be a dummy trial (or some dummy function) before performing the actual test.
+
+Below is a samle dummy function to run in order to initialize the CUDA Runtime API. Put this portion of code in some early part of the program.
+
+```
+// Initialize cuda
+cuda::GpuMat test;
+test.create(1, 1, CV_8U);
+test.release();
+```
 
 ## Using Jetson TX2 onboard webcam
 

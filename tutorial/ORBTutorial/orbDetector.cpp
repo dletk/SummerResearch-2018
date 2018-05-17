@@ -11,11 +11,12 @@ using namespace std;
 int main(int argc, char** argv) {
 	//Preparing the CPU detector and GPU detector
 	Ptr<ORB> orbDetector = ORB::create(5000);
+	// ALWAYS REMEMEBER to use cuda version instead of normal orb version
 	Ptr<cuda::ORB> cudaOrbDetector = cuda::ORB::create(5000);
 	
 	// Initialize cuda
 	cuda::GpuMat test;
-	test.create(2,2, CV_8U);
+	test.create(1, 1, CV_8U);
 	test.release();
 	
 	cout << "DONE INITIALIZE" << endl;
@@ -29,12 +30,15 @@ int main(int argc, char** argv) {
 	cv::cvtColor(image1, grayImage1, COLOR_BGR2GRAY);
 	cv::cvtColor(image2, grayImage2, COLOR_BGR2GRAY);
 	
+	// Upload the images to cuda
 	cuda::GpuMat cudaImage1(grayImage1);
 	cuda::GpuMat cudaImage2(grayImage2);
 	
 	// Stores keypoints and descriptors
 	vector<KeyPoint> keypoints1, keypoints2;
 	Mat descriptors1, descriptors2;
+	
+	// REMEMBER: Cuda can only works with GpuMat, so keypoints should be GpuMat as well instead of vector
 	cuda::GpuMat cudaDescriptors1, cudaDescriptors2, cudaKeypoints1, cudaKeypoints2;
 	
 	// CPU version implementation
