@@ -11,9 +11,13 @@ opencv2/opencv.hpp
 -
 opencv2/features2d.hpp
 -
+opencv2/cudafeatures2d.hpp
+-
 iostream
 -
 stdio.h
+-
+chrono
 -
 
 /usr/local/include/opencv2/calib3d.hpp

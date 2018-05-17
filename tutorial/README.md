@@ -42,7 +42,7 @@ The setting above uses the default flip-method, 0, which indicates no rotation. 
 
 | Flip method | Property Value|
 |-------------|--------------:|
-|indenity - no rotation (default) | 0 |
+|identity - no rotation (default) | 0 |
 |counterclockwise - 90 degrees | 1 |
 |rotate-180 degrees| 2 |
 |clockwise - 90 degrees | 3 |

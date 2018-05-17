@@ -41,7 +41,7 @@ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local \
         -D WITH_QT=ON -D WITH_OPENGL=ON ..
 ```
 
-**IMPORTANT:** The command above turns off precompiled headers option because the limitation of storage space on the TX2. Also, it inlcludes the support of opencv\_contrib, which is a collections of libraries that is free of use for academic purpose only. These libraries are not well maintaiend and tested, so they are not inlcuded in the official release. However, many of them are useful for important tasks of computer vision program. Please read more above this repository from[here](https://github.com/opencv/opencv_contrib) and decide whether you want to have it or not. Delete the option ```-D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules``` if you don't.
+**IMPORTANT:** The command above turns off precompiled headers option because the limitation of storage space on the TX2. Also, it inlcludes the support of opencv\_contrib, which is a collections of libraries that is free of use for academic purpose only. These libraries are not well maintaiend and tested, so they are not inlcuded in the official release. However, many of them are useful for important tasks of computer vision program. Please read more above this repository from [here](https://github.com/opencv/opencv_contrib) and decide whether you want to have it or not. Delete the option ```-D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules``` if you don't.
 
 4. Make the project
 
