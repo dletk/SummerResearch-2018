@@ -32,11 +32,32 @@ int main(int argc, char** argv) {
 	Ptr<DescriptorMatcher> matcher = DescriptorMatcher::create("BruteForce-Hamming");
 	matcher->match(descriptors1, descriptors2, matches, Mat());
 	
+	// Sort the matches by its score and remove not good matches
+	// If the distance of each DMatch is less, it means higher similarity.
+	sort(matches.begin(), matches.end());
+	//for(auto kp: matches) {
+	//	cout << kp.distance << endl;
+	//}
+	
+	
+	// Loop through all the keypoints and save their location to 2 lists
+	vector<Point2f> locations1, locations2;
+	for(int i=0; i < matches.size(); i++) {
+		locations1.push_back(keypoints1[matches[i].queryIdx].pt);
+		locations2.push_back(keypoints2[matches[i].queryIdx].pt);
+	}
+		
 	// Draw out matches
 	Mat imageMatches;
 	drawMatches(grayImage1, keypoints1, grayImage2, keypoints2, matches, imageMatches);
 	imshow("MATCH", imageMatches);
-	
 	waitKey(0);
+	
+	Mat homo = findHomography(locations1, locations2, RANSAC);
+	Mat imReg;
+	warpPerspective(grayImage1, imReg, homo, grayImage2.size());
+	
+	imshow("Match", homo);
+	waitKey(0);	
 	return 0;
 }
