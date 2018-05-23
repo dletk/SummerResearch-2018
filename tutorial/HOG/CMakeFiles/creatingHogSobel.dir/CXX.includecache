@@ -6,18 +6,12 @@
 
 #IncludeRegexTransform: 
 
-/home/nvidia/Documents/SummerResearch-2018/tutorial/CascadeClassifier/hharCascade.cpp
+/home/nvidia/Documents/SummerResearch-2018/tutorial/HOG/creatingHogSobel.cpp
 opencv2/opencv.hpp
--
-opencv2/cudaobjdetect.hpp
--
-stdio.h
 -
 iostream
 -
-chrono
--
-string
+stdio.h
 -
 
 /usr/local/include/opencv2/calib3d.hpp
