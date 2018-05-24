@@ -22,7 +22,7 @@
 2. The feature descriptors size calculation is as follow:
 * Image size: width * height
 * BlockSize: The number of pixels per each block (e.g. 16x16=256)
-* cellSize: The number of pixels per each cell (e.g. 8\*8=256). **Attention:** this is the number of pixels in a cell, so to find the number of cell per block, we have to do blockSize/cellSize.
+* cellSize: The number of pixels per each cell (e.g. 8\*8=256). This information is important for a detection problem. The cell size **SHOULD BE RELEVANT TO THE SIZE OF THE OBJECT/FEATURES (FACES, HEAD,...) IN THE INPUT IMAGE**, i.e., the cell size should be large enough to capture the interested features. **Attention:** this is the number of pixels in a cell, so to find the number of cell per block, we have to do blockSize/cellSize.
 * blockStride: This is the number of pixels overlapping between 2 continuos blocks. The total number of block is depends on this. For the sake of easy calculation, this value is usually set to half of blockSize (e.g. 8x8).
 * The number of bins: 
 ```
