@@ -1,6 +1,10 @@
 #include<opencv2/opencv.hpp>
+#include<opencv2/cudaobjdetect.hpp>
+
 #include<iostream>
+#include<string>
 #include<stdio.h>
+#include<chrono>
 
 using namespace cv;
 using namespace std;
@@ -16,7 +20,16 @@ void drawPeople(Mat image, vector<Rect> foundLocations) {
 
 int main(int argc, char** argv) {
 	Mat image = imread(argv[1]);
+	bool isUsingCuda = false;
+	list<double> totalRunningTime;
 	// image.convertTo(image, CV_32F);
+	
+	if (argc == 3) {
+		if (strcmp(argv[2], "cuda") == 0) {
+			isUsingCuda = true;
+			cout << "===> Using CUDA" << endl;
+		}
+	}
 	
 	const char* gst =  "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,\
 			format=(string)I420, framerate=(fraction)30/1 ! \
@@ -43,39 +56,96 @@ int main(int argc, char** argv) {
 	waitKey(0);
 	destroyAllWindows();
 	
-	Mat tempImage;
+	Ptr<cuda::HOG> cudaDetector;
+	HOGDescriptor detector;
+	cuda::GpuMat cudaImage;
 	
-	while(true) {
-		vidCap.read(tempImage);
-		
-		// resize the image so the winSize 64,128 can be used effectively
-		resize(tempImage, image, Size(), 0.4, 0.4);
-		
-		vector<float> svmDetector = HOGDescriptor::getDefaultPeopleDetector();
-		
-		cout << svmDetector.size() << endl;
-		
-	
-		// Create the dectector and result vector
-		HOGDescriptor detector = HOGDescriptor(Size(64,128), // winSize
+	// Create the dectector and result vector
+	if (!isUsingCuda) {
+		detector = HOGDescriptor(Size(64,128), // winSize
 		 Size(16,16), // blockSize
 		 Size(8,8), // blockStride
 		 Size(8,8), // cellSize
 		 9, // nbins
 		 1 ); //deriveAperture
-		
-		cout << detector.getDescriptorSize() << endl;
-		
-		
-		vector<Rect> foundLocations;
-	
-		detector.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
+	} else {	
+		// Initialize cuda
+		cuda::GpuMat test;
+		test.create(1, 1, CV_8U);
+		test.release();
 
-		// Detect the object and store the location of objects into vector<rect>
-		detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), 1.05, 2, false);
-	
-		drawPeople(image, foundLocations);
+		cudaDetector = cuda::HOG::create();
+		
+		
 	}
+	
+	
+	vector<float> svmDetector;	
+	
+	if (isUsingCuda) {
+		svmDetector = cudaDetector->getDefaultPeopleDetector();
+		cudaDetector->setSVMDetector(svmDetector);
+		
+		// Set up cuda detector parameters
+		cudaDetector->setNumLevels(64);
+        cudaDetector->setHitThreshold(0);
+        cudaDetector->setWinStride(Size(8,8));
+        cudaDetector->setScaleFactor(1.05);
+        //cudaDetector->setGroupThreshold(8);
+		
+	} else {
+		 svmDetector = HOGDescriptor::getDefaultPeopleDetector();
+		 detector.setSVMDetector(svmDetector);
+	}
+		
+	vector<Rect> foundLocations;
+	
+	Mat tempImage;
+	Mat grayImage;
+
+	while(totalRunningTime.size() < 100) {
+		vidCap.read(tempImage);
+		
+		// Begin timing
+		auto time1 = chrono::system_clock::now();
+		
+		// resize the image so the winSize 64,128 can be used effectively
+		resize(tempImage, image, Size(), 0.5, 0.5);
+		auto time2 = chrono::system_clock::now();
+		
+		// Detect the object and store the location of objects into vector<rect>
+		if (isUsingCuda) {
+			cvtColor(image, grayImage, COLOR_BGR2GRAY);
+			cudaImage.upload(grayImage);
+			cudaDetector->detectMultiScale(cudaImage, foundLocations);		
+		} else {
+			detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), 1.05, 2, false);
+		}
+		auto time3 = chrono::system_clock::now();
+		
+		drawPeople(image, foundLocations);
+		auto time4 = chrono::system_clock::now();
+		
+		chrono::duration<double> totalRuntime = time4 - time1;
+		chrono::duration<double> resizeTime = time2 - time1;
+		chrono::duration<double> detectingTime = time3 - time2;
+		chrono::duration<double> drawingTime = time4 - time3;
+		
+		cout << "============" << endl;
+		cout << "Total runtime for a frame: " << totalRuntime.count() << endl;
+		cout << "Resize time: " << resizeTime.count() << endl;
+		cout << "Detecting time: " << detectingTime.count() << endl;
+		cout << "Drawing time: " << drawingTime.count() << endl;
+		totalRunningTime.push_back(detectingTime.count());
+	}
+	
+	double avg = 0;
+    list<double>::iterator it;
+    for(it = totalRunningTime.begin(); it != totalRunningTime.end(); it++) avg += *it;
+    avg /= totalRunningTime.size();
+	
+	cout << "============" << endl;
+	cout << "AVERAGE DETECTING TIME: " << avg << endl;
 	
 	return 0;
 }

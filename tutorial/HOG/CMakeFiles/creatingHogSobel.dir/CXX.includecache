@@ -9,9 +9,15 @@
 /home/nvidia/Documents/SummerResearch-2018/tutorial/HOG/creatingHogSobel.cpp
 opencv2/opencv.hpp
 -
+opencv2/cudaobjdetect.hpp
+-
 iostream
 -
+string
+-
 stdio.h
+-
+chrono
 -
 
 /usr/local/include/opencv2/calib3d.hpp
