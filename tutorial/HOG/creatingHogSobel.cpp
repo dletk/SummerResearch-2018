@@ -43,30 +43,11 @@ int main(int argc, char** argv) {
 	waitKey(0);
 	destroyAllWindows();
 	
-	Mat tempImage;
-	
 	while(true) {
-		vidCap.read(tempImage);
-		
-		// resize the image so the winSize 64,128 can be used effectively
-		resize(tempImage, image, Size(), 0.6, 0.6);
-		
-		vector<float> svmDetector = HOGDescriptor::getDefaultPeopleDetector();
-		
-		cout << svmDetector.size() << endl;
-		
+		vidCap.read(image);
 	
 		// Create the dectector and result vector
-		HOGDescriptor detector = HOGDescriptor(Size(256,512), // winSize
-		 Size(64,64), // blockSize
-		 Size(32,32), // blockStride
-		 Size(32,32), // cellSize
-		 9, // nbins
-		 1 ); //deriveAperture
-		
-		cout << detector.getDescriptorSize() << endl;
-		
-		
+		HOGDescriptor detector = HOGDescriptor();
 		vector<Rect> foundLocations;
 	
 		detector.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
