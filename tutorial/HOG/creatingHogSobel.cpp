@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 	// image.convertTo(image, CV_32F);
 	
 	const char* gst =  "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,\
-			format=(string)I420, framerate=(fraction)120/1 ! \
+			format=(string)I420, framerate=(fraction)30/1 ! \
 			nvvidconv flip-method=0 ! video/x-raw, format=(string)BGRx ! \
 			videoconvert ! video/x-raw, format=(string)BGR ! \
 			appsink";
@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
 		vidCap.read(tempImage);
 		
 		// resize the image so the winSize 64,128 can be used effectively
-		resize(tempImage, image, Size(), 0.6, 0.6);
+		resize(tempImage, image, Size(), 0.4, 0.4);
 		
 		vector<float> svmDetector = HOGDescriptor::getDefaultPeopleDetector();
 		
@@ -57,10 +57,10 @@ int main(int argc, char** argv) {
 		
 	
 		// Create the dectector and result vector
-		HOGDescriptor detector = HOGDescriptor(Size(256,512), // winSize
-		 Size(64,64), // blockSize
-		 Size(32,32), // blockStride
-		 Size(32,32), // cellSize
+		HOGDescriptor detector = HOGDescriptor(Size(64,128), // winSize
+		 Size(16,16), // blockSize
+		 Size(8,8), // blockStride
+		 Size(8,8), // cellSize
 		 9, // nbins
 		 1 ); //deriveAperture
 		
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
 		vector<Rect> foundLocations;
 	
 		detector.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
-	
+
 		// Detect the object and store the location of objects into vector<rect>
 		detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), 1.05, 2, false);
 	
