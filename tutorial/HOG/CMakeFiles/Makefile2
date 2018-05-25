@@ -60,39 +60,39 @@ CMAKE_SOURCE_DIR = /home/nvidia/Documents/SummerResearch-2018/tutorial/HOG
 CMAKE_BINARY_DIR = /home/nvidia/Documents/SummerResearch-2018/tutorial/HOG
 
 #=============================================================================
-# Target rules for target CMakeFiles/creatingHogSobel.dir
+# Target rules for target CMakeFiles/hogDetector.dir
 
 # All Build rule for target.
-CMakeFiles/creatingHogSobel.dir/all:
-	$(MAKE) -f CMakeFiles/creatingHogSobel.dir/build.make CMakeFiles/creatingHogSobel.dir/depend
-	$(MAKE) -f CMakeFiles/creatingHogSobel.dir/build.make CMakeFiles/creatingHogSobel.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/nvidia/Documents/SummerResearch-2018/tutorial/HOG/CMakeFiles --progress-num=1,2 "Built target creatingHogSobel"
-.PHONY : CMakeFiles/creatingHogSobel.dir/all
+CMakeFiles/hogDetector.dir/all:
+	$(MAKE) -f CMakeFiles/hogDetector.dir/build.make CMakeFiles/hogDetector.dir/depend
+	$(MAKE) -f CMakeFiles/hogDetector.dir/build.make CMakeFiles/hogDetector.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/nvidia/Documents/SummerResearch-2018/tutorial/HOG/CMakeFiles --progress-num=1,2 "Built target hogDetector"
+.PHONY : CMakeFiles/hogDetector.dir/all
 
 # Include target in all.
-all: CMakeFiles/creatingHogSobel.dir/all
+all: CMakeFiles/hogDetector.dir/all
 
 .PHONY : all
 
 # Build rule for subdir invocation for target.
-CMakeFiles/creatingHogSobel.dir/rule: cmake_check_build_system
+CMakeFiles/hogDetector.dir/rule: cmake_check_build_system
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nvidia/Documents/SummerResearch-2018/tutorial/HOG/CMakeFiles 2
-	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/creatingHogSobel.dir/all
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/hogDetector.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/nvidia/Documents/SummerResearch-2018/tutorial/HOG/CMakeFiles 0
-.PHONY : CMakeFiles/creatingHogSobel.dir/rule
+.PHONY : CMakeFiles/hogDetector.dir/rule
 
 # Convenience name for target.
-creatingHogSobel: CMakeFiles/creatingHogSobel.dir/rule
+hogDetector: CMakeFiles/hogDetector.dir/rule
 
-.PHONY : creatingHogSobel
-
-# clean rule for target.
-CMakeFiles/creatingHogSobel.dir/clean:
-	$(MAKE) -f CMakeFiles/creatingHogSobel.dir/build.make CMakeFiles/creatingHogSobel.dir/clean
-.PHONY : CMakeFiles/creatingHogSobel.dir/clean
+.PHONY : hogDetector
 
 # clean rule for target.
-clean: CMakeFiles/creatingHogSobel.dir/clean
+CMakeFiles/hogDetector.dir/clean:
+	$(MAKE) -f CMakeFiles/hogDetector.dir/build.make CMakeFiles/hogDetector.dir/clean
+.PHONY : CMakeFiles/hogDetector.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/hogDetector.dir/clean
 
 .PHONY : clean
 

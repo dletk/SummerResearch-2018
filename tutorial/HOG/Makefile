@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named creatingHogSobel
+# Target rules for targets named hogDetector
 
 # Build rule for target.
-creatingHogSobel: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 creatingHogSobel
-.PHONY : creatingHogSobel
+hogDetector: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 hogDetector
+.PHONY : hogDetector
 
 # fast build rule for target.
-creatingHogSobel/fast:
-	$(MAKE) -f CMakeFiles/creatingHogSobel.dir/build.make CMakeFiles/creatingHogSobel.dir/build
-.PHONY : creatingHogSobel/fast
+hogDetector/fast:
+	$(MAKE) -f CMakeFiles/hogDetector.dir/build.make CMakeFiles/hogDetector.dir/build
+.PHONY : hogDetector/fast
 
-creatingHogSobel.o: creatingHogSobel.cpp.o
+hogDetector.o: hogDetector.cpp.o
 
-.PHONY : creatingHogSobel.o
+.PHONY : hogDetector.o
 
 # target to build an object file
-creatingHogSobel.cpp.o:
-	$(MAKE) -f CMakeFiles/creatingHogSobel.dir/build.make CMakeFiles/creatingHogSobel.dir/creatingHogSobel.cpp.o
-.PHONY : creatingHogSobel.cpp.o
+hogDetector.cpp.o:
+	$(MAKE) -f CMakeFiles/hogDetector.dir/build.make CMakeFiles/hogDetector.dir/hogDetector.cpp.o
+.PHONY : hogDetector.cpp.o
 
-creatingHogSobel.i: creatingHogSobel.cpp.i
+hogDetector.i: hogDetector.cpp.i
 
-.PHONY : creatingHogSobel.i
+.PHONY : hogDetector.i
 
 # target to preprocess a source file
-creatingHogSobel.cpp.i:
-	$(MAKE) -f CMakeFiles/creatingHogSobel.dir/build.make CMakeFiles/creatingHogSobel.dir/creatingHogSobel.cpp.i
-.PHONY : creatingHogSobel.cpp.i
+hogDetector.cpp.i:
+	$(MAKE) -f CMakeFiles/hogDetector.dir/build.make CMakeFiles/hogDetector.dir/hogDetector.cpp.i
+.PHONY : hogDetector.cpp.i
 
-creatingHogSobel.s: creatingHogSobel.cpp.s
+hogDetector.s: hogDetector.cpp.s
 
-.PHONY : creatingHogSobel.s
+.PHONY : hogDetector.s
 
 # target to generate assembly for a file
-creatingHogSobel.cpp.s:
-	$(MAKE) -f CMakeFiles/creatingHogSobel.dir/build.make CMakeFiles/creatingHogSobel.dir/creatingHogSobel.cpp.s
-.PHONY : creatingHogSobel.cpp.s
+hogDetector.cpp.s:
+	$(MAKE) -f CMakeFiles/hogDetector.dir/build.make CMakeFiles/hogDetector.dir/hogDetector.cpp.s
+.PHONY : hogDetector.cpp.s
 
 # Help Target
 help:
@@ -158,10 +158,10 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... creatingHogSobel"
-	@echo "... creatingHogSobel.o"
-	@echo "... creatingHogSobel.i"
-	@echo "... creatingHogSobel.s"
+	@echo "... hogDetector"
+	@echo "... hogDetector.o"
+	@echo "... hogDetector.i"
+	@echo "... hogDetector.s"
 .PHONY : help
 
 

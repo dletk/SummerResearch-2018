@@ -9,56 +9,49 @@
 using namespace cv;
 using namespace std;
 
+// Method to draw a rectangle box around the detected object on the image
 void drawPeople(Mat image, vector<Rect> foundLocations) {
 	for(Rect rect: foundLocations) {
 		rectangle(image, Point(rect.x, rect.y), Point(rect.x+rect.width, rect.y+rect.height), Scalar(255,0,0));
 	}
 	
 	imshow("Image", image);
+	// We are using camera stream, so the waitTime is set to 1. Change it to 0 for a static image.
 	waitKey(1);
 }
 
 int main(int argc, char** argv) {
-	Mat image = imread(argv[1]);
+	// The flag to trigger CUDA if needed
 	bool isUsingCuda = false;
-	list<double> totalRunningTime;
-	// image.convertTo(image, CV_32F);
 	
-	if (argc == 3) {
-		if (strcmp(argv[2], "cuda") == 0) {
+	// The list to keep track of all the recorded runtime to calculate average runtime if needed
+	list<double> totalRunningTime;
+	
+	// Check if CUDA is being used
+	if (argc == 2) {
+		if (strcmp(argv[1], "cuda") == 0) {
 			isUsingCuda = true;
 			cout << "===> Using CUDA" << endl;
+		} else {
+			cout << "Wrong input, usage: ./hogDetector <cuda>" << endl;
+			return 0;
 		}
+	} else if (argc > 2) {
+		cout << "Wrong input, usage: ./hogDetector <cuda>" << endl;
+		return 0;
 	}
 	
+	// Setting up the onboard webcam of Jetson TX2
 	const char* gst =  "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,\
 			format=(string)I420, framerate=(fraction)30/1 ! \
 			nvvidconv flip-method=0 ! video/x-raw, format=(string)BGRx ! \
 			videoconvert ! video/x-raw, format=(string)BGR ! \
 			appsink";
-
 	VideoCapture vidCap(gst);
 	
-	Mat gx, gy;
-	
-	// Calculate the gradient in x and y direction
-	Sobel(image, gx, CV_32F, 1, 0, 1);
-	Sobel(image, gy, CV_32F, 0, 1, 1);
-	
-	// Conver the gradient to mangitude and direction, which means its is from cartesian to polar coordinate
-	Mat magnitude, direction;
-	
-	cartToPolar(gx, gy, magnitude, direction, true);
-	
-	imshow("Magnitude", magnitude);
-	imshow("GX", gx);
-	imshow("GY", gy);
-	waitKey(0);
-	destroyAllWindows();
-	
+	// Prepare different versions of the HOG detector because CUDA and sequential code have different types
 	Ptr<cuda::HOG> cudaDetector;
 	HOGDescriptor detector;
-	cuda::GpuMat cudaImage;
 	
 	// Create the dectector and result vector
 	if (!isUsingCuda) {
@@ -74,12 +67,11 @@ int main(int argc, char** argv) {
 		test.create(1, 1, CV_8U);
 		test.release();
 
-		cudaDetector = cuda::HOG::create();
-		
-		
+		cudaDetector = cuda::HOG::create();		
 	}
 	
 	
+	// Prepare the detector for the HOG feature descriptor
 	vector<float> svmDetector;	
 	
 	if (isUsingCuda) {
@@ -98,9 +90,15 @@ int main(int argc, char** argv) {
 		 detector.setSVMDetector(svmDetector);
 	}
 		
+	// Vector of Rect containing the positions of detected objects	
 	vector<Rect> foundLocations;
 	
+	
+	// CUDA needs to store the input image in GpuMat, not Mat
+	cuda::GpuMat cudaImage;
+	Mat image;
 	Mat tempImage;
+	// ATTENTION: The CUDA version only works with grayImage???
 	Mat grayImage;
 
 	while(totalRunningTime.size() < 100) {
@@ -115,6 +113,7 @@ int main(int argc, char** argv) {
 		
 		// Detect the object and store the location of objects into vector<rect>
 		if (isUsingCuda) {
+			// Convert the image into grayImage for the CUDA detector version
 			cvtColor(image, grayImage, COLOR_BGR2GRAY);
 			cudaImage.upload(grayImage);
 			cudaDetector->detectMultiScale(cudaImage, foundLocations);		
@@ -136,9 +135,12 @@ int main(int argc, char** argv) {
 		cout << "Resize time: " << resizeTime.count() << endl;
 		cout << "Detecting time: " << detectingTime.count() << endl;
 		cout << "Drawing time: " << drawingTime.count() << endl;
+		
+		// Add the runtime to the recording lists in order to calculate average later
 		totalRunningTime.push_back(detectingTime.count());
 	}
 	
+	// Calculate average runtime to compare between 2 versions
 	double avg = 0;
     list<double>::iterator it;
     for(it = totalRunningTime.begin(); it != totalRunningTime.end(); it++) avg += *it;
