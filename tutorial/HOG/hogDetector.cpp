@@ -1,4 +1,5 @@
 #include<opencv2/opencv.hpp>
+#include<opencv2/ml.hpp>
 #include<opencv2/cudaobjdetect.hpp>
 
 #include<iostream>
@@ -47,7 +48,7 @@ int main(int argc, char** argv) {
 			nvvidconv flip-method=0 ! video/x-raw, format=(string)BGRx ! \
 			videoconvert ! video/x-raw, format=(string)BGR ! \
 			appsink";
-	VideoCapture vidCap(gst);
+	VideoCapture vidCap(1);
 	
 	// Prepare different versions of the HOG detector because CUDA and sequential code have different types
 	Ptr<cuda::HOG> cudaDetector;
@@ -55,7 +56,7 @@ int main(int argc, char** argv) {
 	
 	// Create the dectector and result vector
 	if (!isUsingCuda) {
-		detector = HOGDescriptor(Size(64,128), // winSize
+		detector = HOGDescriptor(Size(896,592), // winSize
 		 Size(16,16), // blockSize
 		 Size(8,8), // blockStride
 		 Size(8,8), // cellSize
@@ -86,8 +87,10 @@ int main(int argc, char** argv) {
         //cudaDetector->setGroupThreshold(8);
 		
 	} else {
-		 svmDetector = HOGDescriptor::getDefaultPeopleDetector();
-		 detector.setSVMDetector(svmDetector);
+		// Load the custom SVM detector
+		 //svmDetector = HOGDescriptor::getDefaultPeopleDetector();
+		 Ptr<ml::SVM> svm = ml::SVM::load("./my_detector.yml");
+		 detector.setSVMDetector(svm->getSupportVectors());
 	}
 		
 	// Vector of Rect containing the positions of detected objects	
@@ -101,14 +104,14 @@ int main(int argc, char** argv) {
 	// ATTENTION: The CUDA version only works with grayImage???
 	Mat grayImage;
 
-	while(totalRunningTime.size() < 100) {
+	while(totalRunningTime.size() < 1000) {
 		vidCap.read(tempImage);
 		
 		// Begin timing
 		auto time1 = chrono::system_clock::now();
 		
 		// resize the image so the winSize 64,128 can be used effectively
-		resize(tempImage, image, Size(), 0.5, 0.5);
+		resize(tempImage, image, Size(), 1, 1);
 		auto time2 = chrono::system_clock::now();
 		
 		// Detect the object and store the location of objects into vector<rect>
