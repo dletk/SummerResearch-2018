@@ -17,6 +17,7 @@ void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidenc
 	for(Rect rect: foundLocations) {
 		if (!confidences.empty()) {
 			cout << confidences.at(i) << endl;
+			// Using 0.05 to have some tolerance
 			if (confidences.at(i) == max) {
 				cout << "MAX" << endl;
 				rectangle(image, Point(rect.x, rect.y), Point(rect.x+rect.width, rect.y+rect.height), Scalar(255,0,0));
@@ -146,10 +147,15 @@ int main(int argc, char** argv) {
 		}
 		auto time3 = chrono::system_clock::now();
 		
-		auto max = max_element(begin(confidences), end(confidences));
-		cout << "MAX VALUE IS: " << *max << endl;
+		if (!confidences.empty()) { 
+			auto max = max_element(begin(confidences), end(confidences));
+			cout << "MAX VALUE IS: " << *max << endl;
+			drawPeople(image, foundLocations, confidences, *max);
+		} else {
+			drawPeople(image, foundLocations, confidences, 0.0);
+		}
 		
-		drawPeople(image, foundLocations, confidences, *max);
+
 		auto time4 = chrono::system_clock::now();
 		
 		chrono::duration<double> totalRuntime = time4 - time1;
