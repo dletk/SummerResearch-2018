@@ -11,7 +11,7 @@ using namespace std;
 
 vector< float > get_svm_detector( const Ptr< SVM >& svm );
 void convert_to_ml( const std::vector< Mat > & train_samples, Mat& trainData );
-void load_images( const String & dirname, vector< Mat > & img_lst, int width, int height, bool showImages);
+void load_images( const String & dirname, vector< Mat > & img_lst, int width, int height, bool showImages, bool isNegative);
 void sample_neg( const vector< Mat > & full_neg_lst, vector< Mat > & neg_lst, const Size & size );
 void computeHOGs( const Size wsize, const vector< Mat > & img_lst, vector< Mat > & gradient_lst, bool use_flip );
 void test_trained_detector( String obj_det_filename, String test_dir, String videofilename );
@@ -75,7 +75,7 @@ void convert_to_ml( const vector< Mat > & train_samples, Mat& trainData ) {
 
 
 // Load all the images from the given directory
-void load_images( const String & dirname, vector< Mat > & img_lst, int width, int height, bool showImages = false ) {
+void load_images( const String & dirname, vector< Mat > & img_lst, int width, int height, bool showImages = false, bool isNegative = false) {
     // List of files name
     vector< String > files;
     // the openCV helper function to get all the file names in a directory and put into files
@@ -92,8 +92,8 @@ void load_images( const String & dirname, vector< Mat > & img_lst, int width, in
             cout << files[i] << " is invalid!" << endl;
             continue;
         } else {
-		    // Resize the image if needed
-		    if (imageRaw.rows != height && imageRaw.cols != width) {
+		    // Resize the image if needed, only do this if the loading is NOT for negative image
+		    if (imageRaw.rows != height && imageRaw.cols != width && !isNegative) {
 		    	resize(imageRaw, img, Size(width, height)); 
 		    } else {
 		    	img = imageRaw;
@@ -313,9 +313,9 @@ int main( int argc, char** argv )
         pos_image_size = pos_image_size / 8 * 8;
     }
     clog << "Negative images are being loaded...";
-    load_images( neg_dir, full_neg_lst, detector_width, detector_height, false );
-    // Using full_neg_lst
-    // sample_neg( full_neg_lst, neg_lst, pos_image_size );
+    load_images( neg_dir, full_neg_lst, detector_width, detector_height, false, true);
+    // Sample neg will create random sample negative window from the negative picture.
+    sample_neg( full_neg_lst, neg_lst, pos_image_size );
     neg_lst = full_neg_lst;
     
     

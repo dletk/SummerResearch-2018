@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
 	
 	// Create the dectector and result vector
 	if (!isUsingCuda) {
-		detector = HOGDescriptor(Size(896,592), // winSize
+		detector = HOGDescriptor(Size(256,384), // winSize
 		 Size(16,16), // blockSize
 		 Size(8,8), // blockStride
 		 Size(8,8), // cellSize
