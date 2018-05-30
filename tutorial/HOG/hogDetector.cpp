@@ -2,6 +2,7 @@
 #include<opencv2/ml.hpp>
 #include<opencv2/cudaobjdetect.hpp>
 
+#include<algorithm>
 #include<iostream>
 #include<string>
 #include<stdio.h>
@@ -11,9 +12,19 @@ using namespace cv;
 using namespace std;
 
 // Method to draw a rectangle box around the detected object on the image
-void drawPeople(Mat image, vector<Rect> foundLocations) {
+void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidences, double max) {
+	int i = 0;
 	for(Rect rect: foundLocations) {
-		rectangle(image, Point(rect.x, rect.y), Point(rect.x+rect.width, rect.y+rect.height), Scalar(255,0,0));
+		if (!confidences.empty()) {
+			cout << confidences.at(i) << endl;
+			if (confidences.at(i) == max) {
+				cout << "MAX" << endl;
+				rectangle(image, Point(rect.x, rect.y), Point(rect.x+rect.width, rect.y+rect.height), Scalar(255,0,0));
+			}
+			i++;
+		} else {
+			rectangle(image, Point(rect.x, rect.y), Point(rect.x+rect.width, rect.y+rect.height), Scalar(255,0,0));
+		}
 	}
 	
 	imshow("Image", image);
@@ -93,7 +104,7 @@ int main(int argc, char** argv) {
         cudaDetector->setHitThreshold(0);
         cudaDetector->setWinStride(Size(8,8));
         cudaDetector->setScaleFactor(scaleFactor);
-        //cudaDetector->setGroupThreshold(8);
+        cudaDetector->setGroupThreshold(0);
 		
 	} else {
 		// Load the custom SVM detector
@@ -115,6 +126,8 @@ int main(int argc, char** argv) {
 	while(totalRunningTime.size() < 1000) {
 		vidCap.read(tempImage);
 		
+		vector<double> confidences;
+		
 		// Begin timing
 		auto time1 = chrono::system_clock::now();
 		
@@ -127,13 +140,16 @@ int main(int argc, char** argv) {
 			// Convert the image into grayImage for the CUDA detector version
 			cvtColor(image, grayImage, COLOR_BGR2GRAY);
 			cudaImage.upload(grayImage);
-			cudaDetector->detectMultiScale(cudaImage, foundLocations);		
+			cudaDetector->detectMultiScale(cudaImage, foundLocations, &confidences);		
 		} else {
 			detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
 		}
 		auto time3 = chrono::system_clock::now();
 		
-		drawPeople(image, foundLocations);
+		auto max = max_element(begin(confidences), end(confidences));
+		cout << "MAX VALUE IS: " << *max << endl;
+		
+		drawPeople(image, foundLocations, confidences, *max);
 		auto time4 = chrono::system_clock::now();
 		
 		chrono::duration<double> totalRuntime = time4 - time1;
