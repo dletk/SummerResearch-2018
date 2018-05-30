@@ -316,7 +316,6 @@ int main( int argc, char** argv )
     load_images( neg_dir, full_neg_lst, detector_width, detector_height, false, true);
     // Sample neg will create random sample negative window from the negative picture.
     sample_neg( full_neg_lst, neg_lst, pos_image_size );
-    neg_lst = full_neg_lst;
     
     
     clog << "...[done]" << endl;

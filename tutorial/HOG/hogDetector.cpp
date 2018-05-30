@@ -25,6 +25,8 @@ int main(int argc, char** argv) {
 	// The flag to trigger CUDA if needed
 	bool isUsingCuda = false;
 	
+	double scaleFactor = 1.2;
+	
 	// The list to keep track of all the recorded runtime to calculate average runtime if needed
 	list<double> totalRunningTime;
 	
@@ -56,7 +58,7 @@ int main(int argc, char** argv) {
 	
 	// Create the dectector and result vector
 	if (!isUsingCuda) {
-		detector = HOGDescriptor(Size(256,384), // winSize
+		detector = HOGDescriptor(Size(128,192), // winSize
 		 Size(16,16), // blockSize
 		 Size(8,8), // blockStride
 		 Size(8,8), // cellSize
@@ -68,29 +70,35 @@ int main(int argc, char** argv) {
 		test.create(1, 1, CV_8U);
 		test.release();
 
-		cudaDetector = cuda::HOG::create();		
+		cudaDetector = cuda::HOG::create(Size(128,192));		
 	}
 	
 	
 	// Prepare the detector for the HOG feature descriptor
-	vector<float> svmDetector;	
+
+    detector.load("./my_detector.yml");
+	vector<float> svmDetector = detector.svmDetector;
+	
+
+	//Ptr<ml::SVM> svm = Algorithm::load<ml::SVM>("./my_detector.yml");	
+	
+	cout << "LOADED SVM" << endl;
 	
 	if (isUsingCuda) {
-		svmDetector = cudaDetector->getDefaultPeopleDetector();
+		//svmDetector = cudaDetector->getDefaultPeopleDetector();
 		cudaDetector->setSVMDetector(svmDetector);
 		
 		// Set up cuda detector parameters
 		cudaDetector->setNumLevels(64);
         cudaDetector->setHitThreshold(0);
         cudaDetector->setWinStride(Size(8,8));
-        cudaDetector->setScaleFactor(1.05);
+        cudaDetector->setScaleFactor(scaleFactor);
         //cudaDetector->setGroupThreshold(8);
 		
 	} else {
 		// Load the custom SVM detector
 		 //svmDetector = HOGDescriptor::getDefaultPeopleDetector();
-		 Ptr<ml::SVM> svm = ml::SVM::load("./my_detector.yml");
-		 detector.setSVMDetector(svm->getSupportVectors());
+		 //detector.setSVMDetector(svm->getSupportVectors());
 	}
 		
 	// Vector of Rect containing the positions of detected objects	
@@ -121,7 +129,7 @@ int main(int argc, char** argv) {
 			cudaImage.upload(grayImage);
 			cudaDetector->detectMultiScale(cudaImage, foundLocations);		
 		} else {
-			detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), 1.05, 2, false);
+			detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
 		}
 		auto time3 = chrono::system_clock::now();
 		
