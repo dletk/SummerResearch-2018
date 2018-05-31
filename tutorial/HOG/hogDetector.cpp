@@ -18,8 +18,9 @@ using namespace cv;
 using namespace std;
 
 dlib::image_window win;
+dlib::shape_predictor pose_model;
 
-void findLandmarks(Mat image, vector<Rect> faces, dlib::shape_predictor pose_model) {
+void findLandmarks(Mat image, vector<Rect> faces) {
 	// Convert the openCV image to dlib image
 	dlib::cv_image<dlib::bgr_pixel> cvImage(image);
 	vector<dlib::full_object_detection> shapes;
@@ -37,7 +38,7 @@ void findLandmarks(Mat image, vector<Rect> faces, dlib::shape_predictor pose_mod
 }
 
 // Method to draw a rectangle box around the detected object on the image
-void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidences, double max, dlib::shape_predictor pose_model) {
+void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidences, double max) {
 	int i = 0;
 	for(Rect rect: foundLocations) {
 		if (!confidences.empty()) {
@@ -52,7 +53,7 @@ void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidenc
 		}
 	}
 	
-	findLandmarks(image, foundLocations, pose_model);
+	findLandmarks(image, foundLocations);
 	
 	// imshow("Image", image);
 	// We are using camera stream, so the waitTime is set to 1. Change it to 0 for a static image.
@@ -66,7 +67,6 @@ int main(int argc, char** argv) {
 	double scaleFactor = 1.2;
 	
 	// Dlib facial landmark model
-	dlib::shape_predictor pose_model;
     dlib::deserialize("shape_predictor_68_face_landmarks.dat") >> pose_model;
 
 	
@@ -187,9 +187,9 @@ int main(int argc, char** argv) {
 		if (!confidences.empty()) { 
 			auto max = max_element(begin(confidences), end(confidences));
 			cout << "MAX VALUE IS: " << *max << endl;
-			drawPeople(image, foundLocations, confidences, *max, pose_model);
+			drawPeople(image, foundLocations, confidences, *max);
 		} else {
-			drawPeople(image, foundLocations, confidences, 0.0, pose_model);
+			drawPeople(image, foundLocations, confidences, 0.0);
 		}
 		
 
