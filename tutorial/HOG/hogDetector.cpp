@@ -19,7 +19,6 @@ void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidenc
 			cout << confidences.at(i) << endl;
 			// Using 0.05 to have some tolerance
 			if (confidences.at(i) == max) {
-				cout << "MAX" << endl;
 				rectangle(image, Point(rect.x, rect.y), Point(rect.x+rect.width, rect.y+rect.height), Scalar(255,0,0));
 			}
 			i++;
@@ -43,7 +42,7 @@ int main(int argc, char** argv) {
 	list<double> totalRunningTime;
 	
 	// Check if CUDA is being used
-	if (argc == 2) {
+	if (argc == 3) {
 		if (strcmp(argv[1], "cuda") == 0) {
 			isUsingCuda = true;
 			cout << "===> Using CUDA" << endl;
@@ -51,7 +50,7 @@ int main(int argc, char** argv) {
 			cout << "Wrong input, usage: ./hogDetector <cuda>" << endl;
 			return 0;
 		}
-	} else if (argc > 2) {
+	} else if (argc > 3 || argc == 1) {
 		cout << "Wrong input, usage: ./hogDetector <cuda>" << endl;
 		return 0;
 	}
@@ -88,11 +87,12 @@ int main(int argc, char** argv) {
 	
 	// Prepare the detector for the HOG feature descriptor
 
-    detector.load("./my_detector.yml");
+	if (isUsingCuda) {
+    	detector.load(argv[2]);
+    } else {
+    	detector.load(argv[1]);
+    }
 	vector<float> svmDetector = detector.svmDetector;
-	
-
-	//Ptr<ml::SVM> svm = Algorithm::load<ml::SVM>("./my_detector.yml");	
 	
 	cout << "LOADED SVM" << endl;
 	
@@ -105,7 +105,10 @@ int main(int argc, char** argv) {
         cudaDetector->setHitThreshold(0);
         cudaDetector->setWinStride(Size(8,8));
         cudaDetector->setScaleFactor(scaleFactor);
-        cudaDetector->setGroupThreshold(0);
+        
+        // Setting the group threshold means that the detector will group overlapping regions if detected.
+        // In order to find confidences for each detection, group threshold needs to be 0
+        cudaDetector->setGroupThreshold(8);
 		
 	} else {
 		// Load the custom SVM detector
@@ -141,7 +144,9 @@ int main(int argc, char** argv) {
 			// Convert the image into grayImage for the CUDA detector version
 			cvtColor(image, grayImage, COLOR_BGR2GRAY);
 			cudaImage.upload(grayImage);
-			cudaDetector->detectMultiScale(cudaImage, foundLocations, &confidences);		
+			cudaDetector->detectMultiScale(cudaImage, foundLocations);
+			// In order to find the confidences for all detections, set groupThreshold to 0
+			// cudaDetector->detectMultiScale(cudaImage, foundLocations, &confidences);				
 		} else {
 			detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
 		}
