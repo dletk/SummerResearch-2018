@@ -17,10 +17,12 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/usr/local/include"
   "/usr/local/include/opencv"
+  "/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/dlib/.."
   )
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
+  "/home/nvidia/Documents/SummerResearch-2018/tutorial/HOG/dlib_build/CMakeFiles/dlib.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

@@ -8,11 +8,36 @@
 #include<stdio.h>
 #include<chrono>
 
+#include <dlib/image_processing/frontal_face_detector.h>
+#include <dlib/image_processing/render_face_detections.h>
+#include <dlib/image_processing.h>
+#include<dlib/opencv.h>
+
+
 using namespace cv;
 using namespace std;
 
+dlib::image_window win;
+
+void findLandmarks(Mat image, vector<Rect> faces, dlib::shape_predictor pose_model) {
+	// Convert the openCV image to dlib image
+	dlib::cv_image<dlib::bgr_pixel> cvImage(image);
+	vector<dlib::full_object_detection> shapes;
+	
+	for (Rect rect: faces) {
+		// Convert the bounding box in cv::Rect to dlib::rectangle
+		dlib::rectangle face(rect.x, rect.y, rect.x+rect.width, rect.y+rect.height);
+		shapes.push_back(pose_model(cvImage, face));
+	}
+	
+	 // Display it all on the screen
+    win.clear_overlay();
+    win.set_image(cvImage);
+    win.add_overlay(render_face_detections(shapes));
+}
+
 // Method to draw a rectangle box around the detected object on the image
-void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidences, double max) {
+void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidences, double max, dlib::shape_predictor pose_model) {
 	int i = 0;
 	for(Rect rect: foundLocations) {
 		if (!confidences.empty()) {
@@ -27,9 +52,11 @@ void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidenc
 		}
 	}
 	
-	imshow("Image", image);
+	findLandmarks(image, foundLocations, pose_model);
+	
+	// imshow("Image", image);
 	// We are using camera stream, so the waitTime is set to 1. Change it to 0 for a static image.
-	waitKey(1);
+	// waitKey(1);
 }
 
 int main(int argc, char** argv) {
@@ -37,6 +64,11 @@ int main(int argc, char** argv) {
 	bool isUsingCuda = false;
 	
 	double scaleFactor = 1.2;
+	
+	// Dlib facial landmark model
+	dlib::shape_predictor pose_model;
+    dlib::deserialize("shape_predictor_68_face_landmarks.dat") >> pose_model;
+
 	
 	// The list to keep track of all the recorded runtime to calculate average runtime if needed
 	list<double> totalRunningTime;
@@ -155,9 +187,9 @@ int main(int argc, char** argv) {
 		if (!confidences.empty()) { 
 			auto max = max_element(begin(confidences), end(confidences));
 			cout << "MAX VALUE IS: " << *max << endl;
-			drawPeople(image, foundLocations, confidences, *max);
+			drawPeople(image, foundLocations, confidences, *max, pose_model);
 		} else {
-			drawPeople(image, foundLocations, confidences, 0.0);
+			drawPeople(image, foundLocations, confidences, 0.0, pose_model);
 		}
 		
 
