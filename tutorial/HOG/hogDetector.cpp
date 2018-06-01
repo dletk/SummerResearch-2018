@@ -23,12 +23,15 @@ dlib::shape_predictor pose_model;
 void findLandmarks(Mat image, vector<Rect> faces) {
 	// Convert the openCV image to dlib image
 	dlib::cv_image<dlib::bgr_pixel> cvImage(image);
+	// The vector contains all the landmarks detected from all faces
 	vector<dlib::full_object_detection> shapes;
 	
 	for (Rect rect: faces) {
 		// Convert the bounding box in cv::Rect to dlib::rectangle
 		dlib::rectangle face(rect.x, rect.y, rect.x+rect.width, rect.y+rect.height);
-		shapes.push_back(pose_model(cvImage, face));
+		dlib::full_object_detection shape = pose_model(cvImage, face);
+		shapes.push_back(shape);
+		cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
 	}
 	
 	 // Display it all on the screen
@@ -65,6 +68,7 @@ int main(int argc, char** argv) {
 	bool isUsingCuda = false;
 	
 	double scaleFactor = 1.2;
+	Size winSize(176,192);
 	
 	// Dlib facial landmark model
     dlib::deserialize("shape_predictor_68_face_landmarks.dat") >> pose_model;
@@ -101,7 +105,7 @@ int main(int argc, char** argv) {
 	
 	// Create the dectector and result vector
 	if (!isUsingCuda) {
-		detector = HOGDescriptor(Size(128,192), // winSize
+		detector = HOGDescriptor(winSize, // winSize
 		 Size(16,16), // blockSize
 		 Size(8,8), // blockStride
 		 Size(8,8), // cellSize
@@ -113,7 +117,7 @@ int main(int argc, char** argv) {
 		test.create(1, 1, CV_8U);
 		test.release();
 
-		cudaDetector = cuda::HOG::create(Size(128,192));		
+		cudaDetector = cuda::HOG::create(winSize);		
 	}
 	
 	

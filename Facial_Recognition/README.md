@@ -31,3 +31,5 @@ A HOG detector (created in openCV) requires its winSize to match with the dimens
 ```
 
 #### Using SVM machine learning approach to match the face with the current database.
+
+The current database consists of about 15,000 frontal face images from the FERET database (which can be found from [here](https://www.nist.gov/itl/iad/image-group/color-feret-database). The negative database comes from the (INRIA Person dataset)[http://pascal.inrialpes.fr/data/human/] and Background set of images from [Caltech](http://www.vision.caltech.edu/html-files/archive.html).
