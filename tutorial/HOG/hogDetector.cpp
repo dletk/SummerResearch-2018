@@ -171,8 +171,8 @@ int main(int argc, char** argv) {
 		// Begin timing
 		auto time1 = chrono::system_clock::now();
 		
-		// resize the image so the winSize 64,128 can be used effectively
-		resize(tempImage, image, Size(), 1, 1);
+		// Resize the image to larger scale will help us to find smaller face, but it will requires more time to run and reduce the fps
+		resize(tempImage, image, Size(), 2, 2);
 		auto time2 = chrono::system_clock::now();
 		
 		// Detect the object and store the location of objects into vector<rect>
