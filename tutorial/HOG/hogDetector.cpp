@@ -20,6 +20,7 @@ using namespace std;
 dlib::image_window win;
 dlib::shape_predictor pose_model;
 
+// The method to find 68 facial landmarks from a list of detected faces
 void findLandmarks(Mat image, vector<Rect> faces) {
 	// Convert the openCV image to dlib image
 	dlib::cv_image<dlib::bgr_pixel> cvImage(image);
@@ -29,7 +30,9 @@ void findLandmarks(Mat image, vector<Rect> faces) {
 	for (Rect rect: faces) {
 		// Convert the bounding box in cv::Rect to dlib::rectangle
 		dlib::rectangle face(rect.x, rect.y, rect.x+rect.width, rect.y+rect.height);
+		// Detect the facial landmarks in the current bounding box
 		dlib::full_object_detection shape = pose_model(cvImage, face);
+		// Save the facial landmarks detected into the list
 		shapes.push_back(shape);
 		cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
 	}
@@ -43,7 +46,9 @@ void findLandmarks(Mat image, vector<Rect> faces) {
 // Method to draw a rectangle box around the detected object on the image
 void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidences, double max) {
 	int i = 0;
+	// Loop through all detected faces in the image
 	for(Rect rect: foundLocations) {
+		// If confidences is available, display detected regions based on their probability
 		if (!confidences.empty()) {
 			cout << confidences.at(i) << endl;
 			// Using 0.05 to have some tolerance
@@ -67,6 +72,7 @@ int main(int argc, char** argv) {
 	// The flag to trigger CUDA if needed
 	bool isUsingCuda = false;
 	
+	// Variable for creating the HOG detector and descriptors.
 	double scaleFactor = 1.2;
 	Size winSize(176,192);
 	
@@ -113,6 +119,7 @@ int main(int argc, char** argv) {
 		 1 ); //deriveAperture
 	} else {	
 		// Initialize cuda
+		// ATTENTION: This step is essential for CUDA to reach its maximum processing efficiency
 		cuda::GpuMat test;
 		test.create(1, 1, CV_8U);
 		test.release();
@@ -122,12 +129,15 @@ int main(int argc, char** argv) {
 	
 	
 	// Prepare the detector for the HOG feature descriptor
-
+	// CUDA version of HOG descriptor does not have the loading function from yml file.
+	// This work around includes loading the SVM yml file to the sequential detector, and then export it to the CUDA version using getter method.
 	if (isUsingCuda) {
     	detector.load(argv[2]);
     } else {
     	detector.load(argv[1]);
     }
+    
+    // Get the svmDetector loaded from the yml file.
 	vector<float> svmDetector = detector.svmDetector;
 	
 	cout << "LOADED SVM" << endl;
