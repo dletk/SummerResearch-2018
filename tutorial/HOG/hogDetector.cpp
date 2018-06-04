@@ -82,7 +82,7 @@ int main(int argc, char** argv) {
 		"{imgPth imagePath|     | path of the static image}"
 		"{winW winWidth	  |     | winSize width}"
 		"{winH winHeight  |     | winSize height}"
-		"{resizeScale     |1    | Resize scale to find smaller faces}"
+		"{resizeScale     |1.5  | Resize scale to find smaller faces}"
 		"{cuda            |false| using CUDA}"
 		"{detector        |     | filename of the detector for face detection}"
 	};
@@ -193,8 +193,11 @@ int main(int argc, char** argv) {
 	
 	// Using a static image as input instead of a video stream
 	if (isUsingImage) {
-		image = imread(imagePath);
+		tempImage = imread(imagePath);
 		if (isUsingCuda) {
+			// Resize the image to larger scale will help us to find smaller face, but it will requires more time to run and reduce the fps
+			resize(tempImage, image, Size(), resizeScale, resizeScale);
+			
 			// Convert the image to gray scale
 			cvtColor(image, grayImage, COLOR_BGR2GRAY);
 			cudaImage.upload(grayImage);
