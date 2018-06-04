@@ -19,6 +19,7 @@ using namespace std;
 
 dlib::image_window win;
 dlib::shape_predictor pose_model;
+bool isUsingCuda, isUsingImage;
 
 // The method to find 68 facial landmarks from a list of detected faces
 void findLandmarks(Mat image, vector<Rect> faces) {
@@ -37,10 +38,14 @@ void findLandmarks(Mat image, vector<Rect> faces) {
 		cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
 	}
 	
-	 // Display it all on the screen
+	// Display it all on the screen
     win.clear_overlay();
     win.set_image(cvImage);
     win.add_overlay(render_face_detections(shapes));
+    
+    if (isUsingImage) {
+    	win.wait_until_closed();
+    }
 }
 
 // Method to draw a rectangle box around the detected object on the image
@@ -72,35 +77,35 @@ int main(int argc, char** argv) {
 	// Prepare the commandline parser keys
 	const String keys = 
 	{
-		"{help           |     | show help message}"
-		"{image          |false| run the program with static image instead of video stream}"
-		"{pImg pathImage |     | path of the static image}"
-		"{winW winWidth	 |     | winSize width}"
-		"{winH winHeight |     | winSize height}"
-		"{cuda           |false| using CUDA}"
-		"{detector       |     | filename of the detector for face detection}"
+		"{help h          |     | show help message}"
+		"{image           |false| run the program with static image instead of video stream}"
+		"{imgPth imagePath|     | path of the static image}"
+		"{winW winWidth	  |     | winSize width}"
+		"{winH winHeight  |     | winSize height}"
+		"{resizeScale     |1    | Resize scale to find smaller faces}"
+		"{cuda            |false| using CUDA}"
+		"{detector        |     | filename of the detector for face detection}"
 	};
 	
 	CommandLineParser parser(argc, argv, keys);
-	
-	// The flag to trigger CUDA if needed
-	bool isUsingCuda = parser.get<bool>("cuda");
-	// The flag to trigger using static image instead video stream
-	bool isUsingImage = false;
-	
+	// Display help message if needed
 	if (parser.has("help")) {
 		parser.printMessage();
 		exit(0);
 	}
 	
-	if (parser.has("image")) {
-		isUsingImage = true;
-	}
+	// The flag to trigger CUDA if needed
+	isUsingCuda = parser.get<bool>("cuda");
+	// The flag to trigger using static image instead video stream
+	isUsingImage = parser.get<bool>("image");
+
+
 	
 	String detectorPath = parser.get<String>("detector");
-	String imagePath = parser.get<String>("pImg");
+	String imagePath = parser.get<String>("imgPth");
 	int winWidth = parser.get<int>("winW");
 	int winHeight = parser.get<int>("winH");
+	double resizeScale = parser.get<double>("resizeScale");
 	
 	// Variable for creating the HOG detector and descriptors.
 	double scaleFactor = 1.2;
@@ -184,7 +189,25 @@ int main(int argc, char** argv) {
 	Mat tempImage;
 	// ATTENTION: The CUDA version only works with grayImage???
 	Mat grayImage;
-
+	
+	
+	// Using a static image as input instead of a video stream
+	if (isUsingImage) {
+		image = imread(imagePath);
+		if (isUsingCuda) {
+			// Convert the image to gray scale
+			cvtColor(image, grayImage, COLOR_BGR2GRAY);
+			cudaImage.upload(grayImage);
+			cudaDetector->detectMultiScale(cudaImage, foundLocations);
+		} else {
+			detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
+		}
+		
+		drawPeople(image, foundLocations, vector<double>(), 0.0);
+		exit(0);
+	}
+	
+	// RUNNING the video stream version
 	while(totalRunningTime.size() < 1000) {
 		vidCap.read(tempImage);
 		
@@ -194,7 +217,7 @@ int main(int argc, char** argv) {
 		auto time1 = chrono::system_clock::now();
 		
 		// Resize the image to larger scale will help us to find smaller face, but it will requires more time to run and reduce the fps
-		resize(tempImage, image, Size(), 1,1);
+		resize(tempImage, image, Size(), resizeScale, resizeScale);
 		auto time2 = chrono::system_clock::now();
 		
 		// Detect the object and store the location of objects into vector<rect>
