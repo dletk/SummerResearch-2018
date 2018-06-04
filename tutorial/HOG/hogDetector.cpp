@@ -69,12 +69,42 @@ void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidenc
 }
 
 int main(int argc, char** argv) {
+	// Prepare the commandline parser keys
+	const String keys = 
+	{
+		"{help           |     | show help message}"
+		"{image          |false| run the program with static image instead of video stream}"
+		"{pImg pathImage |     | path of the static image}"
+		"{winW winWidth	 |     | winSize width}"
+		"{winH winHeight |     | winSize height}"
+		"{cuda           |false| using CUDA}"
+		"{detector       |     | filename of the detector for face detection}"
+	};
+	
+	CommandLineParser parser(argc, argv, keys);
+	
 	// The flag to trigger CUDA if needed
-	bool isUsingCuda = false;
+	bool isUsingCuda = parser.get<bool>("cuda");
+	// The flag to trigger using static image instead video stream
+	bool isUsingImage = false;
+	
+	if (parser.has("help")) {
+		parser.printMessage();
+		exit(0);
+	}
+	
+	if (parser.has("image")) {
+		isUsingImage = true;
+	}
+	
+	String detectorPath = parser.get<String>("detector");
+	String imagePath = parser.get<String>("pImg");
+	int winWidth = parser.get<int>("winW");
+	int winHeight = parser.get<int>("winH");
 	
 	// Variable for creating the HOG detector and descriptors.
 	double scaleFactor = 1.2;
-	Size winSize(176,192);
+	Size winSize(winWidth, winHeight);
 	
 	// Dlib facial landmark model
     dlib::deserialize("shape_predictor_68_face_landmarks.dat") >> pose_model;
@@ -82,20 +112,6 @@ int main(int argc, char** argv) {
 	
 	// The list to keep track of all the recorded runtime to calculate average runtime if needed
 	list<double> totalRunningTime;
-	
-	// Check if CUDA is being used
-	if (argc == 3) {
-		if (strcmp(argv[1], "cuda") == 0) {
-			isUsingCuda = true;
-			cout << "===> Using CUDA" << endl;
-		} else {
-			cout << "Wrong input, usage: ./hogDetector <cuda>" << endl;
-			return 0;
-		}
-	} else if (argc > 3 || argc == 1) {
-		cout << "Wrong input, usage: ./hogDetector <cuda>" << endl;
-		return 0;
-	}
 	
 	// Setting up the onboard webcam of Jetson TX2
 	const char* gst =  "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,\
@@ -123,7 +139,7 @@ int main(int argc, char** argv) {
 		cuda::GpuMat test;
 		test.create(1, 1, CV_8U);
 		test.release();
-
+		cout << "Using CUDA" << endl;
 		cudaDetector = cuda::HOG::create(winSize);		
 	}
 	
@@ -131,11 +147,7 @@ int main(int argc, char** argv) {
 	// Prepare the detector for the HOG feature descriptor
 	// CUDA version of HOG descriptor does not have the loading function from yml file.
 	// This work around includes loading the SVM yml file to the sequential detector, and then export it to the CUDA version using getter method.
-	if (isUsingCuda) {
-    	detector.load(argv[2]);
-    } else {
-    	detector.load(argv[1]);
-    }
+    detector.load(detectorPath);
     
     // Get the svmDetector loaded from the yml file.
 	vector<float> svmDetector = detector.svmDetector;
@@ -182,7 +194,7 @@ int main(int argc, char** argv) {
 		auto time1 = chrono::system_clock::now();
 		
 		// Resize the image to larger scale will help us to find smaller face, but it will requires more time to run and reduce the fps
-		resize(tempImage, image, Size(), 2, 2);
+		resize(tempImage, image, Size(), 1,1);
 		auto time2 = chrono::system_clock::now();
 		
 		// Detect the object and store the location of objects into vector<rect>
