@@ -7,10 +7,18 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
+  "/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/dlib/CMakeLists.txt"
+  "/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/dlib/cmake_utils/find_blas.cmake"
+  "/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/dlib/cmake_utils/release_build_by_default"
+  "/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/dlib/cmake_utils/set_compiler_specific_options.cmake"
+  "/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/dlib/cmake_utils/test_for_cudnn/find_cudnn.txt"
+  "/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/dlib/cmake_utils/use_cpp_11.cmake"
   "CMakeFiles/3.5.1/CMakeCCompiler.cmake"
   "CMakeFiles/3.5.1/CMakeCXXCompiler.cmake"
   "CMakeFiles/3.5.1/CMakeSystem.cmake"
   "CMakeLists.txt"
+  "dlib_build/CMakeFiles/dlib.dir/cuda/dlib_generated_cuda_dlib.cu.o.depend"
+  "dlib_build/CMakeFiles/dlib.dir/cuda/dlib_generated_cusolver_dlibapi.cu.o.depend"
   "/usr/local/share/OpenCV/OpenCVConfig-version.cmake"
   "/usr/local/share/OpenCV/OpenCVConfig.cmake"
   "/usr/local/share/OpenCV/OpenCVModules-release.cmake"
@@ -23,21 +31,35 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake-3.5/Modules/CMakeParseArguments.cmake"
   "/usr/share/cmake-3.5/Modules/CMakeSystemSpecificInformation.cmake"
   "/usr/share/cmake-3.5/Modules/CMakeSystemSpecificInitialize.cmake"
+  "/usr/share/cmake-3.5/Modules/CheckFortranFunctionExists.cmake"
+  "/usr/share/cmake-3.5/Modules/CheckFunctionExists.cmake"
   "/usr/share/cmake-3.5/Modules/CheckIncludeFile.cmake"
+  "/usr/share/cmake-3.5/Modules/CheckIncludeFileCXX.cmake"
   "/usr/share/cmake-3.5/Modules/CheckLibraryExists.cmake"
   "/usr/share/cmake-3.5/Modules/CheckSymbolExists.cmake"
+  "/usr/share/cmake-3.5/Modules/CheckTypeSize.cmake"
   "/usr/share/cmake-3.5/Modules/Compiler/GNU-C.cmake"
   "/usr/share/cmake-3.5/Modules/Compiler/GNU-CXX.cmake"
   "/usr/share/cmake-3.5/Modules/Compiler/GNU.cmake"
   "/usr/share/cmake-3.5/Modules/FindCUDA.cmake"
+  "/usr/share/cmake-3.5/Modules/FindCUDA/run_nvcc.cmake"
+  "/usr/share/cmake-3.5/Modules/FindJPEG.cmake"
+  "/usr/share/cmake-3.5/Modules/FindOpenMP.cmake"
+  "/usr/share/cmake-3.5/Modules/FindPNG.cmake"
   "/usr/share/cmake-3.5/Modules/FindPackageHandleStandardArgs.cmake"
   "/usr/share/cmake-3.5/Modules/FindPackageMessage.cmake"
+  "/usr/share/cmake-3.5/Modules/FindPkgConfig.cmake"
   "/usr/share/cmake-3.5/Modules/FindThreads.cmake"
+  "/usr/share/cmake-3.5/Modules/FindX11.cmake"
+  "/usr/share/cmake-3.5/Modules/FindZLIB.cmake"
+  "/usr/share/cmake-3.5/Modules/GNUInstallDirs.cmake"
+  "/usr/share/cmake-3.5/Modules/MultiArchCross.cmake"
   "/usr/share/cmake-3.5/Modules/Platform/Linux-GNU-C.cmake"
   "/usr/share/cmake-3.5/Modules/Platform/Linux-GNU-CXX.cmake"
   "/usr/share/cmake-3.5/Modules/Platform/Linux-GNU.cmake"
   "/usr/share/cmake-3.5/Modules/Platform/Linux.cmake"
   "/usr/share/cmake-3.5/Modules/Platform/UnixPaths.cmake"
+  "/usr/share/cmake-3.5/Modules/SelectLibraryConfigurations.cmake"
   )
 
 # The corresponding makefile is:
@@ -49,9 +71,11 @@ set(CMAKE_MAKEFILE_OUTPUTS
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/CMakeDirectoryInformation.cmake"
+  "dlib_build/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/hogDetector.dir/DependInfo.cmake"
+  "dlib_build/CMakeFiles/dlib.dir/DependInfo.cmake"
   )

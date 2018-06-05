@@ -122,6 +122,7 @@ hogDetector: /usr/local/lib/libopencv_optflow.so.4.0.0
 hogDetector: /usr/local/lib/libopencv_cvv.so.4.0.0
 hogDetector: /usr/local/lib/libopencv_bgsegm.so.4.0.0
 hogDetector: /usr/local/lib/libopencv_structured_light.so.4.0.0
+hogDetector: dlib_build/libdlib.a
 hogDetector: /usr/local/lib/libopencv_shape.so.4.0.0
 hogDetector: /usr/local/lib/libopencv_cudaoptflow.so.4.0.0
 hogDetector: /usr/local/lib/libopencv_cudalegacy.so.4.0.0
@@ -148,6 +149,23 @@ hogDetector: /usr/local/lib/libopencv_phase_unwrapping.so.4.0.0
 hogDetector: /usr/local/lib/libopencv_imgproc.so.4.0.0
 hogDetector: /usr/local/lib/libopencv_core.so.4.0.0
 hogDetector: /usr/local/lib/libopencv_cudev.so.4.0.0
+hogDetector: /usr/local/cuda-9.0/lib64/libcudart_static.a
+hogDetector: /usr/lib/aarch64-linux-gnu/librt.so
+hogDetector: /usr/lib/aarch64-linux-gnu/librt.so
+hogDetector: /usr/lib/aarch64-linux-gnu/libnsl.so
+hogDetector: /usr/lib/aarch64-linux-gnu/libSM.so
+hogDetector: /usr/lib/aarch64-linux-gnu/libICE.so
+hogDetector: /usr/lib/aarch64-linux-gnu/libX11.so
+hogDetector: /usr/lib/aarch64-linux-gnu/libXext.so
+hogDetector: /usr/lib/aarch64-linux-gnu/libpng.so
+hogDetector: /usr/lib/aarch64-linux-gnu/libz.so
+hogDetector: /usr/lib/aarch64-linux-gnu/libjpeg.so
+hogDetector: /usr/lib/libcblas.so
+hogDetector: /usr/lib/liblapack.so
+hogDetector: /usr/local/cuda-9.0/lib64/libcublas.so
+hogDetector: /usr/lib/aarch64-linux-gnu/libcudnn.so
+hogDetector: /usr/local/cuda-9.0/lib64/libcurand.so
+hogDetector: /usr/local/cuda-9.0/lib64/libcusolver.so
 hogDetector: CMakeFiles/hogDetector.dir/link.txt
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/nvidia/Documents/SummerResearch-2018/tutorial/HOG/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Linking CXX executable hogDetector"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/hogDetector.dir/link.txt --verbose=$(VERBOSE)

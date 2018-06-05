@@ -8,17 +8,56 @@
 #include<stdio.h>
 #include<chrono>
 
+#include <dlib/image_processing/frontal_face_detector.h>
+#include <dlib/image_processing/render_face_detections.h>
+#include <dlib/image_processing.h>
+#include<dlib/opencv.h>
+
+
 using namespace cv;
 using namespace std;
+
+dlib::image_window win;
+dlib::shape_predictor pose_model;
+bool isUsingCuda, isUsingImage;
+
+// The method to find 68 facial landmarks from a list of detected faces
+void findLandmarks(Mat image, vector<Rect> faces) {
+	// Convert the openCV image to dlib image
+	dlib::cv_image<dlib::bgr_pixel> cvImage(image);
+	// The vector contains all the landmarks detected from all faces
+	vector<dlib::full_object_detection> shapes;
+	
+	for (Rect rect: faces) {
+		// Convert the bounding box in cv::Rect to dlib::rectangle
+		dlib::rectangle face(rect.x, rect.y, rect.x+rect.width, rect.y+rect.height);
+		// Detect the facial landmarks in the current bounding box
+		dlib::full_object_detection shape = pose_model(cvImage, face);
+		// Save the facial landmarks detected into the list
+		shapes.push_back(shape);
+		cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
+	}
+	
+	// Display it all on the screen
+    win.clear_overlay();
+    win.set_image(cvImage);
+    win.add_overlay(render_face_detections(shapes));
+    
+    if (isUsingImage) {
+    	win.wait_until_closed();
+    }
+}
 
 // Method to draw a rectangle box around the detected object on the image
 void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidences, double max) {
 	int i = 0;
+	// Loop through all detected faces in the image
 	for(Rect rect: foundLocations) {
+		// If confidences is available, display detected regions based on their probability
 		if (!confidences.empty()) {
 			cout << confidences.at(i) << endl;
+			// Using 0.05 to have some tolerance
 			if (confidences.at(i) == max) {
-				cout << "MAX" << endl;
 				rectangle(image, Point(rect.x, rect.y), Point(rect.x+rect.width, rect.y+rect.height), Scalar(255,0,0));
 			}
 			i++;
@@ -27,33 +66,57 @@ void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidenc
 		}
 	}
 	
-	imshow("Image", image);
+	findLandmarks(image, foundLocations);
+	
+	// imshow("Image", image);
 	// We are using camera stream, so the waitTime is set to 1. Change it to 0 for a static image.
-	waitKey(1);
+	// waitKey(1);
 }
 
 int main(int argc, char** argv) {
-	// The flag to trigger CUDA if needed
-	bool isUsingCuda = false;
+	// Prepare the commandline parser keys
+	const String keys = 
+	{
+		"{help h          |     | show help message}"
+		"{image           |false| run the program with static image instead of video stream}"
+		"{imgPth imagePath|     | path of the static image}"
+		"{winW winWidth	  |     | winSize width}"
+		"{winH winHeight  |     | winSize height}"
+		"{resizeScale     |1.5  | Resize scale to find smaller faces}"
+		"{cuda            |false| using CUDA}"
+		"{detector        |     | filename of the detector for face detection}"
+	};
 	
+	CommandLineParser parser(argc, argv, keys);
+	// Display help message if needed
+	if (parser.has("help")) {
+		parser.printMessage();
+		exit(0);
+	}
+	
+	// The flag to trigger CUDA if needed
+	isUsingCuda = parser.get<bool>("cuda");
+	// The flag to trigger using static image instead video stream
+	isUsingImage = parser.get<bool>("image");
+
+
+	
+	String detectorPath = parser.get<String>("detector");
+	String imagePath = parser.get<String>("imgPth");
+	int winWidth = parser.get<int>("winW");
+	int winHeight = parser.get<int>("winH");
+	double resizeScale = parser.get<double>("resizeScale");
+	
+	// Variable for creating the HOG detector and descriptors.
 	double scaleFactor = 1.2;
+	Size winSize(winWidth, winHeight);
+	
+	// Dlib facial landmark model
+    dlib::deserialize("shape_predictor_68_face_landmarks.dat") >> pose_model;
+
 	
 	// The list to keep track of all the recorded runtime to calculate average runtime if needed
 	list<double> totalRunningTime;
-	
-	// Check if CUDA is being used
-	if (argc == 2) {
-		if (strcmp(argv[1], "cuda") == 0) {
-			isUsingCuda = true;
-			cout << "===> Using CUDA" << endl;
-		} else {
-			cout << "Wrong input, usage: ./hogDetector <cuda>" << endl;
-			return 0;
-		}
-	} else if (argc > 2) {
-		cout << "Wrong input, usage: ./hogDetector <cuda>" << endl;
-		return 0;
-	}
 	
 	// Setting up the onboard webcam of Jetson TX2
 	const char* gst =  "nvcamerasrc ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720,\
@@ -69,7 +132,7 @@ int main(int argc, char** argv) {
 	
 	// Create the dectector and result vector
 	if (!isUsingCuda) {
-		detector = HOGDescriptor(Size(128,192), // winSize
+		detector = HOGDescriptor(winSize, // winSize
 		 Size(16,16), // blockSize
 		 Size(8,8), // blockStride
 		 Size(8,8), // cellSize
@@ -77,21 +140,22 @@ int main(int argc, char** argv) {
 		 1 ); //deriveAperture
 	} else {	
 		// Initialize cuda
+		// ATTENTION: This step is essential for CUDA to reach its maximum processing efficiency
 		cuda::GpuMat test;
 		test.create(1, 1, CV_8U);
 		test.release();
-
-		cudaDetector = cuda::HOG::create(Size(128,192));		
+		cout << "Using CUDA" << endl;
+		cudaDetector = cuda::HOG::create(winSize);		
 	}
 	
 	
 	// Prepare the detector for the HOG feature descriptor
-
-    detector.load("./my_detector.yml");
+	// CUDA version of HOG descriptor does not have the loading function from yml file.
+	// This work around includes loading the SVM yml file to the sequential detector, and then export it to the CUDA version using getter method.
+    detector.load(detectorPath);
+    
+    // Get the svmDetector loaded from the yml file.
 	vector<float> svmDetector = detector.svmDetector;
-	
-
-	//Ptr<ml::SVM> svm = Algorithm::load<ml::SVM>("./my_detector.yml");	
 	
 	cout << "LOADED SVM" << endl;
 	
@@ -104,7 +168,10 @@ int main(int argc, char** argv) {
         cudaDetector->setHitThreshold(0);
         cudaDetector->setWinStride(Size(8,8));
         cudaDetector->setScaleFactor(scaleFactor);
-        cudaDetector->setGroupThreshold(0);
+        
+        // Setting the group threshold means that the detector will group overlapping regions if detected.
+        // In order to find confidences for each detection, group threshold needs to be 0
+        cudaDetector->setGroupThreshold(8);
 		
 	} else {
 		// Load the custom SVM detector
@@ -122,7 +189,28 @@ int main(int argc, char** argv) {
 	Mat tempImage;
 	// ATTENTION: The CUDA version only works with grayImage???
 	Mat grayImage;
-
+	
+	
+	// Using a static image as input instead of a video stream
+	if (isUsingImage) {
+		tempImage = imread(imagePath);
+		if (isUsingCuda) {
+			// Resize the image to larger scale will help us to find smaller face, but it will requires more time to run and reduce the fps
+			resize(tempImage, image, Size(), resizeScale, resizeScale);
+			
+			// Convert the image to gray scale
+			cvtColor(image, grayImage, COLOR_BGR2GRAY);
+			cudaImage.upload(grayImage);
+			cudaDetector->detectMultiScale(cudaImage, foundLocations);
+		} else {
+			detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
+		}
+		
+		drawPeople(image, foundLocations, vector<double>(), 0.0);
+		exit(0);
+	}
+	
+	// RUNNING the video stream version
 	while(totalRunningTime.size() < 1000) {
 		vidCap.read(tempImage);
 		
@@ -131,8 +219,8 @@ int main(int argc, char** argv) {
 		// Begin timing
 		auto time1 = chrono::system_clock::now();
 		
-		// resize the image so the winSize 64,128 can be used effectively
-		resize(tempImage, image, Size(), 1, 1);
+		// Resize the image to larger scale will help us to find smaller face, but it will requires more time to run and reduce the fps
+		resize(tempImage, image, Size(), resizeScale, resizeScale);
 		auto time2 = chrono::system_clock::now();
 		
 		// Detect the object and store the location of objects into vector<rect>
@@ -140,16 +228,23 @@ int main(int argc, char** argv) {
 			// Convert the image into grayImage for the CUDA detector version
 			cvtColor(image, grayImage, COLOR_BGR2GRAY);
 			cudaImage.upload(grayImage);
-			cudaDetector->detectMultiScale(cudaImage, foundLocations, &confidences);		
+			cudaDetector->detectMultiScale(cudaImage, foundLocations);
+			// In order to find the confidences for all detections, set groupThreshold to 0
+			// cudaDetector->detectMultiScale(cudaImage, foundLocations, &confidences);				
 		} else {
 			detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
 		}
 		auto time3 = chrono::system_clock::now();
 		
-		auto max = max_element(begin(confidences), end(confidences));
-		cout << "MAX VALUE IS: " << *max << endl;
+		if (!confidences.empty()) { 
+			auto max = max_element(begin(confidences), end(confidences));
+			cout << "MAX VALUE IS: " << *max << endl;
+			drawPeople(image, foundLocations, confidences, *max);
+		} else {
+			drawPeople(image, foundLocations, confidences, 0.0);
+		}
 		
-		drawPeople(image, foundLocations, confidences, *max);
+
 		auto time4 = chrono::system_clock::now();
 		
 		chrono::duration<double> totalRuntime = time4 - time1;
