@@ -17,11 +17,19 @@
 using namespace cv;
 using namespace std;
 
+
+
 dlib::image_window win, win_faces;
 dlib::shape_predictor pose_model;
+vector<Point2f> landmarksPositions;
 
-bool isUsingCuda, isUsingImage;
+bool isUsingCuda, isUsingImage, isCreatingData;
 Mat originalImageGray;
+// Define the size of a face
+dlib::rectangle faceSize(0, 0, 176, 192);
+
+
+
 
 // The method to find 68 facial landmarks from a list of detected faces
 void findLandmarks(Mat image, vector<Rect> faces) {
@@ -29,9 +37,6 @@ void findLandmarks(Mat image, vector<Rect> faces) {
 	vector<dlib::full_object_detection> shapes;
 	// Convert the openCV image to dlib image
 	dlib::cv_image<dlib::bgr_pixel> cvImage(image);
-	
-	// Define the region to find dlib::rectangle
-	dlib::rectangle face(0, 0, 176, 192);
 	
 	for (Rect rect: faces) {
 		// Crop the face out of the original image and resize it to the desired size
@@ -42,7 +47,7 @@ void findLandmarks(Mat image, vector<Rect> faces) {
 		dlib::cv_image<unsigned char> regionImage(faceRegion);
 		
 		// Detect the facial landmarks in the current bounding box
-		dlib::full_object_detection shape = pose_model(regionImage, face);
+		dlib::full_object_detection shape = pose_model(regionImage, faceSize);
 		// Save the facial landmarks detected into the list
 		shapes.push_back(shape);
 		cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
@@ -62,6 +67,38 @@ void findLandmarks(Mat image, vector<Rect> faces) {
     if (isUsingImage) {
     	win.wait_until_closed();
     }
+}
+
+// Method to create the reference face aligment from the reference image
+void createReferenceFace(Mat referenceImage) {
+	// Create a dlib image from the openCV reference image
+	dlib::cv_image<unsigned char> image(referenceImage);
+	
+	// Detect the facial landmarks in the current bounding box
+	dlib::full_object_detection shape = pose_model(image, faceSize);
+	
+	Point2f point1((float) shape.part(0).x(), (float) shape.part(0).y());
+	Point2f point2((float) shape.part(34).x(), (float) shape.part(34).y());
+	Point2f point3((float) shape.part(67).x(), (float) shape.part(67).y());
+	
+	landmarksPositions.push_back(point1);
+	landmarksPositions.push_back(point2);
+	landmarksPositions.push_back(point3);
+}
+
+// Method to align facial landmarks to match the positions in reference image using affine transformation 
+void alignImage(Mat image, dlib::full_object_detection detectedMarks) {
+	vector<Point2f> fromPoints;
+	
+	Point2f point1((float) detectedMarks.part(0).x(), (float) detectedMarks.part(0).y());
+	Point2f point2((float) detectedMarks.part(34).x(), (float) detectedMarks.part(34).y());
+	Point2f point3((float) detectedMarks.part(67).x(), (float) detectedMarks.part(67).y());
+	
+	fromPoints.push_back(point1);
+	fromPoints.push_back(point2);
+	fromPoints.push_back(point3);
+	
+	warpAffine(image, image, getAffineTransform(fromPoints, landmarksPositions), Size(176,192));
 }
 
 // Method to draw a rectangle box around the detected object on the image
@@ -101,6 +138,8 @@ int main(int argc, char** argv) {
 		"{resizeScale     |1.5  | Resize scale to find smaller faces}"
 		"{cuda            |false| using CUDA}"
 		"{detector        |     | filename of the detector for face detection}"
+		"{createData      |false| create data from the detection process}"
+		"{referenceImage  |     | reference image to create data}"
 	};
 	
 	CommandLineParser parser(argc, argv, keys);
@@ -114,11 +153,14 @@ int main(int argc, char** argv) {
 	isUsingCuda = parser.get<bool>("cuda");
 	// The flag to trigger using static image instead video stream
 	isUsingImage = parser.get<bool>("image");
+	// The flag to trigger creating data
+	isCreatingData = parser.get<bool>("createData");
 
 
 	
 	String detectorPath = parser.get<String>("detector");
 	String imagePath = parser.get<String>("imgPth");
+	String referenceImagePath = parser.get<String>("referenceImage");
 	int winWidth = parser.get<int>("winW");
 	int winHeight = parser.get<int>("winH");
 	double resizeScale = parser.get<double>("resizeScale");
@@ -210,10 +252,13 @@ int main(int argc, char** argv) {
 	// Using a static image as input instead of a video stream
 	if (isUsingImage) {
 		tempImage = imread(imagePath);
+		// Resize the image to larger scale will help us to find smaller face, but it will requires more time to run and reduce the fps
+		resize(tempImage, image, Size(), resizeScale, resizeScale);
+		
+		cvtColor(image, grayImage, COLOR_BGR2GRAY);
+		originalImageGray = grayImage.clone();
+		
 		if (isUsingCuda) {
-			// Resize the image to larger scale will help us to find smaller face, but it will requires more time to run and reduce the fps
-			resize(tempImage, image, Size(), resizeScale, resizeScale);
-			
 			// Convert the image to gray scale
 			cvtColor(image, grayImage, COLOR_BGR2GRAY);
 			originalImageGray = grayImage.clone();
@@ -221,6 +266,7 @@ int main(int argc, char** argv) {
 			cudaDetector->detectMultiScale(cudaImage, foundLocations);
 		} else {
 			detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
+			
 		}
 		
 		drawPeople(image, foundLocations, vector<double>(), 0.0);
@@ -251,6 +297,8 @@ int main(int argc, char** argv) {
 			// cudaDetector->detectMultiScale(cudaImage, foundLocations, &confidences);				
 		} else {
 			detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
+			cvtColor(image, grayImage, COLOR_BGR2GRAY);
+			originalImageGray = grayImage.clone();
 		}
 		auto time3 = chrono::system_clock::now();
 		
