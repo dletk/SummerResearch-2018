@@ -19,7 +19,7 @@ using namespace std;
 
 
 
-dlib::image_window win, win_faces;
+dlib::image_window win, win_Reference;
 dlib::shape_predictor pose_model;
 vector<Point2f> landmarksPositions;
 
@@ -29,8 +29,15 @@ Mat originalImageGray;
 dlib::rectangle faceSize(0, 0, 176, 192);
 
 
-
-
+// NOTE: ORDER OF FACIAL LANDMARKS IN DLIB
+//Points 0 to 16 is the Jawline
+//Points 17 to 21 is the Right Eyebrow
+//Points 22 to 26 is the Left Eyebrow
+//Points 27 to 35 is the Nose
+//Points 36 to 41 is the Right Eye
+//Points 42 to 47 is the Left Eye
+//Points 48 to 60 is Outline of the Mouth
+//Points 61 to 67 is the Inner line of the Mouth
 
 // Method to create the reference face aligment from the reference image
 void createReferenceFace(Mat referenceImage) {
@@ -40,28 +47,39 @@ void createReferenceFace(Mat referenceImage) {
 	// Detect the facial landmarks in the current bounding box
 	dlib::full_object_detection shape = pose_model(image, faceSize);
 	
-	Point2f point1((float) shape.part(0).x(), (float) shape.part(0).y());
-	Point2f point2((float) shape.part(34).x(), (float) shape.part(34).y());
-	Point2f point3((float) shape.part(67).x(), (float) shape.part(67).y());
+	Point2f point1((float) shape.part(36).x(), (float) shape.part(36).y());
+	Point2f point2((float) shape.part(47).x(), (float) shape.part(47).y());
+	Point2f point3((float) shape.part(34).x(), (float) shape.part(34).y());
+	
+	cout << point1 << endl;
+	cout << point2 << endl;
+	cout << point3 << endl;
 	
 	landmarksPositions.push_back(point1);
 	landmarksPositions.push_back(point2);
 	landmarksPositions.push_back(point3);
+	
+  	win_Reference.clear_overlay();	
+    win_Reference.set_image(image);
+    win_Reference.add_overlay(render_face_detections(shape));
+    
+    win_Reference.wait_until_closed();
 }
 
 // Method to align facial landmarks to match the positions in reference image using affine transformation 
 void alignImage(Mat image, dlib::full_object_detection detectedMarks) {
 	vector<Point2f> fromPoints;
 	
-	Point2f point1((float) detectedMarks.part(0).x(), (float) detectedMarks.part(0).y());
-	Point2f point2((float) detectedMarks.part(34).x(), (float) detectedMarks.part(34).y());
-	Point2f point3((float) detectedMarks.part(67).x(), (float) detectedMarks.part(67).y());
+	Point2f point1((float) detectedMarks.part(36).x(), (float) detectedMarks.part(36).y());
+	Point2f point2((float) detectedMarks.part(47).x(), (float) detectedMarks.part(47).y());
+	Point2f point3((float) detectedMarks.part(34).x(), (float) detectedMarks.part(34).y());
 	
 	fromPoints.push_back(point1);
 	fromPoints.push_back(point2);
 	fromPoints.push_back(point3);
 	
-	warpAffine(image, image, getAffineTransform(fromPoints, landmarksPositions), Size(176,192));
+	warpAffine(image, image, getAffineTransform(fromPoints, landmarksPositions), Size(176,192), INTER_CUBIC);
+	
 	imwrite("alignedImage.jpg", image);
 }
 
@@ -86,12 +104,6 @@ void findLandmarks(Mat image, vector<Rect> faces) {
 		
 		cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
 		cout << "Size of face: " << rect.size() << endl;
-		
-		for (int i=0; i < shape.num_parts(); i++) {
-			dlib::point point = shape.part(i);
-			int x = point.x();
-			int y = point.y();
-		}
 	}
 	
 	// Display it all on the screen
