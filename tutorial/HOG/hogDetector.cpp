@@ -47,17 +47,12 @@ void createReferenceFace(Mat referenceImage) {
 	// Detect the facial landmarks in the current bounding box
 	dlib::full_object_detection shape = pose_model(image, faceSize);
 	
-	Point2f point1((float) shape.part(36).x(), (float) shape.part(36).y());
-	Point2f point2((float) shape.part(47).x(), (float) shape.part(47).y());
-	Point2f point3((float) shape.part(34).x(), (float) shape.part(34).y());
+	for (int i = 0; i<68; i++) {
+		Point2f point((float) shape.part(i).x(), (float) shape.part(i).y());
+		landmarksPositions.push_back(point);
+	}
 	
-	cout << point1 << endl;
-	cout << point2 << endl;
-	cout << point3 << endl;
-	
-	landmarksPositions.push_back(point1);
-	landmarksPositions.push_back(point2);
-	landmarksPositions.push_back(point3);
+
 	
   	win_Reference.clear_overlay();	
     win_Reference.set_image(image);
@@ -70,15 +65,13 @@ void createReferenceFace(Mat referenceImage) {
 void alignImage(Mat image, dlib::full_object_detection detectedMarks) {
 	vector<Point2f> fromPoints;
 	
-	Point2f point1((float) detectedMarks.part(36).x(), (float) detectedMarks.part(36).y());
-	Point2f point2((float) detectedMarks.part(47).x(), (float) detectedMarks.part(47).y());
-	Point2f point3((float) detectedMarks.part(34).x(), (float) detectedMarks.part(34).y());
+	for (int i = 0; i<68; i++) {
+		Point2f point((float) detectedMarks.part(i).x(), (float) detectedMarks.part(i).y());
+		fromPoints.push_back(point);
+	}
+
 	
-	fromPoints.push_back(point1);
-	fromPoints.push_back(point2);
-	fromPoints.push_back(point3);
-	
-	warpAffine(image, image, getAffineTransform(fromPoints, landmarksPositions), Size(176,192), INTER_CUBIC);
+	warpPerspective(image, image, findHomography(fromPoints, landmarksPositions), Size(176,192), INTER_CUBIC);
 	
 	imwrite("alignedImage.jpg", image);
 }
