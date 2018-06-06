@@ -17,31 +17,47 @@
 using namespace cv;
 using namespace std;
 
-dlib::image_window win;
+dlib::image_window win, win_faces;
 dlib::shape_predictor pose_model;
+
 bool isUsingCuda, isUsingImage;
+Mat originalImageGray;
 
 // The method to find 68 facial landmarks from a list of detected faces
 void findLandmarks(Mat image, vector<Rect> faces) {
-	// Convert the openCV image to dlib image
-	dlib::cv_image<dlib::bgr_pixel> cvImage(image);
 	// The vector contains all the landmarks detected from all faces
 	vector<dlib::full_object_detection> shapes;
+	// Convert the openCV image to dlib image
+	dlib::cv_image<dlib::bgr_pixel> cvImage(image);
+	
+	// Define the region to find dlib::rectangle
+	dlib::rectangle face(0, 0, 176, 192);
 	
 	for (Rect rect: faces) {
-		// Convert the bounding box in cv::Rect to dlib::rectangle
-		dlib::rectangle face(rect.x, rect.y, rect.x+rect.width, rect.y+rect.height);
+		// Crop the face out of the original image and resize it to the desired size
+		Mat faceRegion = originalImageGray(rect);
+		resize(faceRegion, faceRegion, Size(176,192));
+		
+		// Convert the openCV image to dlib image
+		dlib::cv_image<unsigned char> regionImage(faceRegion);
+		
 		// Detect the facial landmarks in the current bounding box
-		dlib::full_object_detection shape = pose_model(cvImage, face);
+		dlib::full_object_detection shape = pose_model(regionImage, face);
 		// Save the facial landmarks detected into the list
 		shapes.push_back(shape);
 		cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
+		cout << "Size of face: " << rect.size() << endl;
+		
+		for (int i=0; i < shape.num_parts(); i++) {
+			dlib::point point = shape.part(i);
+			int x = point.x();
+			int y = point.y();
+		}
 	}
 	
 	// Display it all on the screen
-    win.clear_overlay();
-    win.set_image(cvImage);
-    win.add_overlay(render_face_detections(shapes));
+	win.clear_overlay();
+	win.set_image(cvImage);
     
     if (isUsingImage) {
     	win.wait_until_closed();
@@ -200,6 +216,7 @@ int main(int argc, char** argv) {
 			
 			// Convert the image to gray scale
 			cvtColor(image, grayImage, COLOR_BGR2GRAY);
+			originalImageGray = grayImage.clone();
 			cudaImage.upload(grayImage);
 			cudaDetector->detectMultiScale(cudaImage, foundLocations);
 		} else {
@@ -227,6 +244,7 @@ int main(int argc, char** argv) {
 		if (isUsingCuda) {
 			// Convert the image into grayImage for the CUDA detector version
 			cvtColor(image, grayImage, COLOR_BGR2GRAY);
+			originalImageGray = grayImage.clone();
 			cudaImage.upload(grayImage);
 			cudaDetector->detectMultiScale(cudaImage, foundLocations);
 			// In order to find the confidences for all detections, set groupThreshold to 0
