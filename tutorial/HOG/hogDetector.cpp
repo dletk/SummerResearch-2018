@@ -31,43 +31,6 @@ dlib::rectangle faceSize(0, 0, 176, 192);
 
 
 
-// The method to find 68 facial landmarks from a list of detected faces
-void findLandmarks(Mat image, vector<Rect> faces) {
-	// The vector contains all the landmarks detected from all faces
-	vector<dlib::full_object_detection> shapes;
-	// Convert the openCV image to dlib image
-	dlib::cv_image<dlib::bgr_pixel> cvImage(image);
-	
-	for (Rect rect: faces) {
-		// Crop the face out of the original image and resize it to the desired size
-		Mat faceRegion = originalImageGray(rect);
-		resize(faceRegion, faceRegion, Size(176,192));
-		
-		// Convert the openCV image to dlib image
-		dlib::cv_image<unsigned char> regionImage(faceRegion);
-		
-		// Detect the facial landmarks in the current bounding box
-		dlib::full_object_detection shape = pose_model(regionImage, faceSize);
-		// Save the facial landmarks detected into the list
-		shapes.push_back(shape);
-		cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
-		cout << "Size of face: " << rect.size() << endl;
-		
-		for (int i=0; i < shape.num_parts(); i++) {
-			dlib::point point = shape.part(i);
-			int x = point.x();
-			int y = point.y();
-		}
-	}
-	
-	// Display it all on the screen
-	win.clear_overlay();
-	win.set_image(cvImage);
-    
-    if (isUsingImage) {
-    	win.wait_until_closed();
-    }
-}
 
 // Method to create the reference face aligment from the reference image
 void createReferenceFace(Mat referenceImage) {
@@ -99,6 +62,45 @@ void alignImage(Mat image, dlib::full_object_detection detectedMarks) {
 	fromPoints.push_back(point3);
 	
 	warpAffine(image, image, getAffineTransform(fromPoints, landmarksPositions), Size(176,192));
+	imwrite("alignedImage.jpg", image);
+}
+
+// The method to find 68 facial landmarks from a list of detected faces
+void findLandmarks(Mat image, vector<Rect> faces) {
+	// Convert the openCV image to dlib image
+	dlib::cv_image<dlib::bgr_pixel> cvImage(image);
+	
+	for (Rect rect: faces) {
+		// Crop the face out of the original image and resize it to the desired size
+		Mat faceRegion = originalImageGray(rect);
+		resize(faceRegion, faceRegion, Size(176,192));
+		
+		// Convert the openCV image to dlib image
+		dlib::cv_image<unsigned char> regionImage(faceRegion);
+		
+		// Detect the facial landmarks in the current bounding box
+		dlib::full_object_detection shape = pose_model(regionImage, faceSize);
+		if (isCreatingData) {
+			alignImage(faceRegion, shape);
+		}
+		
+		cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
+		cout << "Size of face: " << rect.size() << endl;
+		
+		for (int i=0; i < shape.num_parts(); i++) {
+			dlib::point point = shape.part(i);
+			int x = point.x();
+			int y = point.y();
+		}
+	}
+	
+	// Display it all on the screen
+	win.clear_overlay();
+	win.set_image(cvImage);
+    
+    if (isUsingImage) {
+    	win.wait_until_closed();
+    }
 }
 
 // Method to draw a rectangle box around the detected object on the image
@@ -231,10 +233,6 @@ int main(int argc, char** argv) {
         // In order to find confidences for each detection, group threshold needs to be 0
         cudaDetector->setGroupThreshold(8);
 		
-	} else {
-		// Load the custom SVM detector
-		 //svmDetector = HOGDescriptor::getDefaultPeopleDetector();
-		 //detector.setSVMDetector(svm->getSupportVectors());
 	}
 		
 	// Vector of Rect containing the positions of detected objects	
@@ -257,6 +255,13 @@ int main(int argc, char** argv) {
 		
 		cvtColor(image, grayImage, COLOR_BGR2GRAY);
 		originalImageGray = grayImage.clone();
+		
+		if (isCreatingData) {
+			Mat imageReference = imread(referenceImagePath);
+			cvtColor(imageReference, grayImage, COLOR_BGR2GRAY);
+			createReferenceFace(grayImage);
+		}
+		
 		
 		if (isUsingCuda) {
 			// Convert the image to gray scale
