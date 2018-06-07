@@ -584,3 +584,275 @@ Linking C executable cmTC_ccebd
 make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial Recognition/CMakeFiles/CMakeTmp'
 
 
+Determining if the include file pthread.h exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_c2a92/fast"
+/usr/bin/make -f CMakeFiles/cmTC_c2a92.dir/build.make CMakeFiles/cmTC_c2a92.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_c2a92.dir/CheckIncludeFile.c.o
+/usr/bin/cc     -o CMakeFiles/cmTC_c2a92.dir/CheckIncludeFile.c.o   -c /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_c2a92
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c2a92.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTC_c2a92.dir/CheckIncludeFile.c.o  -o cmTC_c2a92 -rdynamic 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the function pthread_create exists in the pthread passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_40335/fast"
+/usr/bin/make -f CMakeFiles/cmTC_40335.dir/build.make CMakeFiles/cmTC_40335.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_40335.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=pthread_create   -o CMakeFiles/cmTC_40335.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_40335
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_40335.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_40335.dir/CheckFunctionExists.c.o  -o cmTC_40335 -rdynamic -lpthread 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the function XOpenDisplay exists in the /usr/lib/aarch64-linux-gnu/libX11.so;/usr/lib/aarch64-linux-gnu/libXext.so passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_07310/fast"
+/usr/bin/make -f CMakeFiles/cmTC_07310.dir/build.make CMakeFiles/cmTC_07310.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_07310.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=XOpenDisplay   -o CMakeFiles/cmTC_07310.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_07310
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_07310.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=XOpenDisplay    CMakeFiles/cmTC_07310.dir/CheckFunctionExists.c.o  -o cmTC_07310 -rdynamic /usr/lib/aarch64-linux-gnu/libX11.so /usr/lib/aarch64-linux-gnu/libXext.so 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the function gethostbyname exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_11ff9/fast"
+/usr/bin/make -f CMakeFiles/cmTC_11ff9.dir/build.make CMakeFiles/cmTC_11ff9.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_11ff9.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=gethostbyname   -o CMakeFiles/cmTC_11ff9.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_11ff9
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_11ff9.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=gethostbyname    CMakeFiles/cmTC_11ff9.dir/CheckFunctionExists.c.o  -o cmTC_11ff9 -rdynamic 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the function connect exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_b439f/fast"
+/usr/bin/make -f CMakeFiles/cmTC_b439f.dir/build.make CMakeFiles/cmTC_b439f.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_b439f.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=connect   -o CMakeFiles/cmTC_b439f.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_b439f
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b439f.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=connect    CMakeFiles/cmTC_b439f.dir/CheckFunctionExists.c.o  -o cmTC_b439f -rdynamic 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the function remove exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_99453/fast"
+/usr/bin/make -f CMakeFiles/cmTC_99453.dir/build.make CMakeFiles/cmTC_99453.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_99453.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=remove   -o CMakeFiles/cmTC_99453.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_99453
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_99453.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=remove    CMakeFiles/cmTC_99453.dir/CheckFunctionExists.c.o  -o cmTC_99453 -rdynamic 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the function shmat exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_62b5c/fast"
+/usr/bin/make -f CMakeFiles/cmTC_62b5c.dir/build.make CMakeFiles/cmTC_62b5c.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_62b5c.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=shmat   -o CMakeFiles/cmTC_62b5c.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_62b5c
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_62b5c.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=shmat    CMakeFiles/cmTC_62b5c.dir/CheckFunctionExists.c.o  -o cmTC_62b5c -rdynamic 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the function IceConnectionNumber exists in the ICE passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_e2c35/fast"
+/usr/bin/make -f CMakeFiles/cmTC_e2c35.dir/build.make CMakeFiles/cmTC_e2c35.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_e2c35.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=IceConnectionNumber   -o CMakeFiles/cmTC_e2c35.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_e2c35
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e2c35.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=IceConnectionNumber    CMakeFiles/cmTC_e2c35.dir/CheckFunctionExists.c.o  -o cmTC_e2c35 -rdynamic -lICE 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the function png_create_read_struct exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_f94e7/fast"
+/usr/bin/make -f CMakeFiles/cmTC_f94e7.dir/build.make CMakeFiles/cmTC_f94e7.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_f94e7.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=png_create_read_struct   -o CMakeFiles/cmTC_f94e7.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_f94e7
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f94e7.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=png_create_read_struct    CMakeFiles/cmTC_f94e7.dir/CheckFunctionExists.c.o  -o cmTC_f94e7 -rdynamic /usr/lib/aarch64-linux-gnu/libpng.so /usr/lib/aarch64-linux-gnu/libz.so 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the function jpeg_read_header exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_c1571/fast"
+/usr/bin/make -f CMakeFiles/cmTC_c1571.dir/build.make CMakeFiles/cmTC_c1571.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_c1571.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=jpeg_read_header   -o CMakeFiles/cmTC_c1571.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_c1571
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c1571.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=jpeg_read_header    CMakeFiles/cmTC_c1571.dir/CheckFunctionExists.c.o  -o cmTC_c1571 -rdynamic /usr/lib/aarch64-linux-gnu/libjpeg.so 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the include file sys/types.h exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_38e01/fast"
+/usr/bin/make -f CMakeFiles/cmTC_38e01.dir/build.make CMakeFiles/cmTC_38e01.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_38e01.dir/CheckIncludeFile.c.o
+/usr/bin/cc     -o CMakeFiles/cmTC_38e01.dir/CheckIncludeFile.c.o   -c /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_38e01
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_38e01.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTC_38e01.dir/CheckIncludeFile.c.o  -o cmTC_38e01 -rdynamic 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the include file stdint.h exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_a079b/fast"
+/usr/bin/make -f CMakeFiles/cmTC_a079b.dir/build.make CMakeFiles/cmTC_a079b.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_a079b.dir/CheckIncludeFile.c.o
+/usr/bin/cc     -o CMakeFiles/cmTC_a079b.dir/CheckIncludeFile.c.o   -c /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_a079b
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a079b.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTC_a079b.dir/CheckIncludeFile.c.o  -o cmTC_a079b -rdynamic 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the include file stddef.h exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_32685/fast"
+/usr/bin/make -f CMakeFiles/cmTC_32685.dir/build.make CMakeFiles/cmTC_32685.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_32685.dir/CheckIncludeFile.c.o
+/usr/bin/cc     -o CMakeFiles/cmTC_32685.dir/CheckIncludeFile.c.o   -c /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp/CheckIncludeFile.c
+Linking C executable cmTC_32685
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_32685.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTC_32685.dir/CheckIncludeFile.c.o  -o cmTC_32685 -rdynamic 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining size of void* passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_699fd/fast"
+/usr/bin/make -f CMakeFiles/cmTC_699fd.dir/build.make CMakeFiles/cmTC_699fd.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_699fd.dir/SIZE_OF_VOID_PTR.c.o
+/usr/bin/cc     -o CMakeFiles/cmTC_699fd.dir/SIZE_OF_VOID_PTR.c.o   -c /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CheckTypeSize/SIZE_OF_VOID_PTR.c
+Linking C executable cmTC_699fd
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_699fd.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTC_699fd.dir/SIZE_OF_VOID_PTR.c.o  -o cmTC_699fd -rdynamic /usr/lib/aarch64-linux-gnu/libjpeg.so 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the function cblas_ddot exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_222ee/fast"
+/usr/bin/make -f CMakeFiles/cmTC_222ee.dir/build.make CMakeFiles/cmTC_222ee.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_222ee.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=cblas_ddot   -o CMakeFiles/cmTC_222ee.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_222ee
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_222ee.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=cblas_ddot    CMakeFiles/cmTC_222ee.dir/CheckFunctionExists.c.o  -o cmTC_222ee -rdynamic /usr/lib/libatlas.so /usr/lib/libcblas.so 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Determining if the function sgesv_ exists passed with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_f4ac5/fast"
+/usr/bin/make -f CMakeFiles/cmTC_f4ac5.dir/build.make CMakeFiles/cmTC_f4ac5.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_f4ac5.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=sgesv_   -o CMakeFiles/cmTC_f4ac5.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_f4ac5
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f4ac5.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=sgesv_    CMakeFiles/cmTC_f4ac5.dir/CheckFunctionExists.c.o  -o cmTC_f4ac5 -rdynamic /usr/lib/liblapack.so 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+
+Performing C SOURCE FILE Test OpenMP_FLAG_DETECTED succeeded with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_ce015/fast"
+/usr/bin/make -f CMakeFiles/cmTC_ce015.dir/build.make CMakeFiles/cmTC_ce015.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building C object CMakeFiles/cmTC_ce015.dir/src.c.o
+/usr/bin/cc    -DOpenMP_FLAG_DETECTED -fopenmp   -o CMakeFiles/cmTC_ce015.dir/src.c.o   -c /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp/src.c
+Linking C executable cmTC_ce015
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ce015.dir/link.txt --verbose=1
+/usr/bin/cc   -DOpenMP_FLAG_DETECTED -fopenmp    CMakeFiles/cmTC_ce015.dir/src.c.o  -o cmTC_ce015 -rdynamic /usr/lib/liblapack.so 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+#include <omp.h>
+int main() {
+#ifdef _OPENMP
+  return 0;
+#else
+  breaks_on_purpose
+#endif
+}
+
+Performing C++ SOURCE FILE Test OpenMP_FLAG_DETECTED succeeded with the following output:
+Change Dir: /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_6aec0/fast"
+/usr/bin/make -f CMakeFiles/cmTC_6aec0.dir/build.make CMakeFiles/cmTC_6aec0.dir/build
+make[1]: Entering directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_6aec0.dir/src.cxx.o
+/usr/bin/c++     -DOpenMP_FLAG_DETECTED -fopenmp   -o CMakeFiles/cmTC_6aec0.dir/src.cxx.o -c /home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_6aec0
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_6aec0.dir/link.txt --verbose=1
+/usr/bin/c++    -DOpenMP_FLAG_DETECTED -fopenmp    CMakeFiles/cmTC_6aec0.dir/src.cxx.o  -o cmTC_6aec0 -rdynamic /usr/lib/liblapack.so 
+make[1]: Leaving directory '/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/CMakeFiles/CMakeTmp'
+
+Source file was:
+
+#include <omp.h>
+int main() {
+#ifdef _OPENMP
+  return 0;
+#else
+  breaks_on_purpose
+#endif
+}
+

@@ -6,15 +6,15 @@
 
 #IncludeRegexTransform: 
 
-/home/nvidia/Documents/SummerResearch-2018/Facial Recognition/createHOGDetector.cpp
+/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/createHOGDetector.cpp
 opencv2/imgproc.hpp
-/home/nvidia/Documents/SummerResearch-2018/Facial Recognition/opencv2/imgproc.hpp
+/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/opencv2/imgproc.hpp
 opencv2/highgui.hpp
-/home/nvidia/Documents/SummerResearch-2018/Facial Recognition/opencv2/highgui.hpp
+/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/opencv2/highgui.hpp
 opencv2/ml.hpp
-/home/nvidia/Documents/SummerResearch-2018/Facial Recognition/opencv2/ml.hpp
+/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/opencv2/ml.hpp
 opencv2/objdetect.hpp
-/home/nvidia/Documents/SummerResearch-2018/Facial Recognition/opencv2/objdetect.hpp
+/home/nvidia/Documents/SummerResearch-2018/Facial_Recognition/opencv2/objdetect.hpp
 iostream
 -
 time.h
