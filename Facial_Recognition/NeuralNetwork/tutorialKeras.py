@@ -49,6 +49,11 @@ model.add(keras.layers.Dense(10, activation="softmax"))
 # Print out the info of model
 model.summary()
 
+# %% Load the model from disk
+with open("./Facial_Recognition/NeuralNetwork/fashion_mnistModel.json", "r") as json_file:
+    model = keras.models.model_from_json(json_file.read())
+model.load_weights("./Facial_Recognition/NeuralNetwork/fashion_mnistWeight.h5")
+
 # %% Compile the model
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
 
@@ -60,6 +65,8 @@ model.fit(x_train, y_train, batch_size=128, epochs=10, validation_split=0.2, cal
 
 # %% Test the model after training
 model.evaluate(x_test, y_test)
+# %% Predict
+model.predict(x_test)
 
 # %% Save the model
 # Save the structure
