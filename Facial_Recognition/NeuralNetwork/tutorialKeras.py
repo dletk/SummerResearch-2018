@@ -2,6 +2,9 @@
 import time
 import keras
 import tensorflow as tf
+from keras import backend as K
+import numpy as np
+import graph_util
 
 # %% Load the data into
 (x_train, y_train), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()
@@ -17,6 +20,7 @@ x_test = x_test.reshape(x_test.shape[0], 28, 28, 1)
 y_train = keras.utils.to_categorical(y_train, 10)
 y_test = keras.utils.to_categorical(y_test, 10)
 
+
 # %% Check data
 y_train.shape
 x_train.shape
@@ -31,20 +35,20 @@ model.add(keras.layers.Conv2D(filters=64, kernel_size=(3,3), padding="same", act
 # After doing convolution, using a max pooling layer to reduce the size
 model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
 # Drop out some input to avoid overfitting
-model.add(keras.layers.Dropout(0.2))
+# model.add(keras.layers.Dropout(0.2))
 
 model.add(keras.layers.Conv2D(filters=32, kernel_size=(3,3), activation="relu", padding="same"))
 model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-model.add(keras.layers.Dropout(0.2))
+# model.add(keras.layers.Dropout(0.2))
 
 # Add a flatten layer to flat the input before feed into Dense layer
 model.add(keras.layers.Flatten())
 
 # Using the dense layers to analyze and produce out come
 model.add(keras.layers.Dense(256, activation="relu"))
-model.add(keras.layers.Dropout(0.3))
+# model.add(keras.layers.Dropout(0.3))
 model.add(keras.layers.Dense(64, activation="relu"))
-model.add(keras.layers.Dropout(0.3))
+# model.add(keras.layers.Dropout(0.3))
 model.add(keras.layers.Dense(10, activation="softmax"))
 
 # Print out the info of model
@@ -106,9 +110,17 @@ with open("fashion_mnistModel.json", "w") as json_file:
     json_file.write(modelJSON)
 
 # Save the weight
-model.save_weights("./fashion_mnistWeight.h5")
+model.save("./fashion_mnistWeight.h5")
 
+# %% Export the graph compatible with cv2
+# Serialize and fix the graph
+sess = K.get_session()
+graph_def = sess.graph.as_graph_def(add_shapes=True)
+graph_def = tf.graph_util.convert_variables_to_constants(sess, graph_def, [model.output.name.split(':')[0]])
+graph_util.make_cv2_compatible(graph_def)
 
 # %% Create the fronzen model from the current model
-frozen_graph = freeze_session(keras.backend.get_session(), output_names=[out.op.name for out in model.outputs])
-tf.train.write_graph(frozen_graph, "./", "fashionMNISTmodel.pbtxt", as_text=True)
+tf.train.write_graph(graph_def, '', 'model.pb', as_text=False)
+
+# frozen_graph = freeze_session(keras.backend.get_session(), output_names=[out.op.name for out in model.outputs])
+# tf.train.write_graph(frozen_graph, "./", "fashionMNISTmodel.pbtxt", as_text=True)
