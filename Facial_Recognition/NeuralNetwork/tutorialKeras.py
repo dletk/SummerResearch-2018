@@ -111,4 +111,4 @@ model.save_weights("./fashion_mnistWeight.h5")
 
 # %% Create the fronzen model from the current model
 frozen_graph = freeze_session(keras.backend.get_session(), output_names=[out.op.name for out in model.outputs])
-tf.train.write_graph(frozen_graph, "./", "fashionMNISTmodel.pbtxt", as_text=True)
+tf.train.write_graph(frozen_graph, "./", "fashionMNISTmodel.pb", as_text=True)
