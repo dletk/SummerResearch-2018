@@ -1,13 +1,16 @@
 # %% Import required libraries
 import time
-import keras
+
+from keras.datasets import fashion_mnist
+from tensorflow import keras
 import tensorflow as tf
-from keras import backend as K
+from tensorflow.python.keras import backend as K
+
 import numpy as np
 import graph_util
 
 # %% Load the data into
-(x_train, y_train), (x_test, y_test) = keras.datasets.fashion_mnist.load_data()
+(x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 
 # %% Normalizing the image on the scale of 0-255
 x_train = x_train.astype("float32") / 255
@@ -100,8 +103,6 @@ model.fit(x_train, y_train, batch_size=128, epochs=10, validation_split=0.2, cal
 
 # %% Test the model after training
 model.evaluate(x_test, y_test)
-# %% Predict
-model.predict(x_test)
 
 # %% Save the model
 # Save the structure
@@ -119,7 +120,7 @@ graph_def = sess.graph.as_graph_def(add_shapes=True)
 graph_def = tf.graph_util.convert_variables_to_constants(sess, graph_def, [model.output.name.split(':')[0]])
 graph_util.make_cv2_compatible(graph_def)
 
-# %% Create the fronzen model from the current model
+# %% Create the frozen model from the current model
 tf.train.write_graph(graph_def, '', 'model.pb', as_text=False)
 
 # frozen_graph = freeze_session(keras.backend.get_session(), output_names=[out.op.name for out in model.outputs])
