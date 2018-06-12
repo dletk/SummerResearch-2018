@@ -88,9 +88,9 @@ def freeze_session(session, keep_var_names=None, output_names=None, clear_device
         return frozen_graph
 
 # %% Load the model from disk
-with open("./Facial_Recognition/NeuralNetwork/fashion_mnistModel.json", "r") as json_file:
+with open("./fashion_mnistModel.json", "r") as json_file:
     model = keras.models.model_from_json(json_file.read())
-model.load_weights("./Facial_Recognition/NeuralNetwork/fashion_mnistWeight.h5")
+model.load_weights("./fashion_mnistWeight.h5")
 
 # %% Compile the model
 model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])

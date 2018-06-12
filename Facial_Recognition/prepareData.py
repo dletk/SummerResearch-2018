@@ -3,13 +3,13 @@ import glob
 import os
 
 # %% Load in the labels of the image
-with open("./Facial_Recognition/list_name.txt") as labelsFile:
+with open("../list_name.txt") as labelsFile:
     labels = [line.strip() for line in labelsFile.readlines()]
 print(labels)
 
 # %% Load the data
 # Set the parent directory for the raw data files
-parent_directory  = "./Facial_Recognition/data/cfp-dataset/"
+parent_directory  = "../data/cfp-dataset/"
 # Get all the images in the Images directory, including frontal and profile images
 list_of_all_images = glob.glob(parent_directory+"/Images/*/*/*")
 list_of_all_images.sort()

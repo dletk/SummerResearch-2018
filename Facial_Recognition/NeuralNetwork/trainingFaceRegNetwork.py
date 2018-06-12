@@ -9,7 +9,7 @@ import keras
 # %% ===========================================
 # Load the images into numpy array, looping through all of the image using glob
 # The directory containing all the images
-parent_directory = "./Facial_Recognition/alignedImages/data/cfp-dataset/data/*"
+parent_directory = "../alignedImages/data/cfp-dataset/data/*"
 # Construct the images path list, the list is in random order, so sort it as well
 image_paths = sorted(glob.glob(parent_directory))
 # print(image_paths)
