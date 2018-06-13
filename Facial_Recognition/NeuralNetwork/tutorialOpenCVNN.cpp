@@ -8,7 +8,7 @@ using namespace std;
 using namespace cv;
 
 int main(int argc, char** argv) {
-	String model = "../../model.pb";
+	String model = "./model.pb";
 	Mat image = imread("./example.jpg");
 	
 	cvtColor(image, image, COLOR_BGR2GRAY);

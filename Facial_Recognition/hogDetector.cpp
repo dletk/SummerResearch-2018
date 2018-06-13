@@ -23,7 +23,7 @@ dlib::image_window win, win_Reference;
 dlib::shape_predictor pose_model;
 vector<Point2f> landmarksPositions;
 
-bool isUsingCuda, isUsingImage, isCreatingData;
+bool isUsingCuda, isUsingImage, isCreatingData, displayOutput;
 Mat originalImageGray;
 // Define the size of a face
 dlib::rectangle faceSize(0, 0, 176, 192);
@@ -113,8 +113,9 @@ void findLandmarks(Mat image, vector<Rect> faces, String file) {
     if (isUsingImage) {
     	unsigned long temp1;
     	bool temp2;
-    	//win.get_next_keypress(temp1, temp2);
-    	//win.wait_until_closed();
+    	if (displayOutput) {
+			win.get_next_keypress(temp1, temp2);
+    	}
     }
 }
 
@@ -157,6 +158,7 @@ int main(int argc, char** argv) {
 		"{detector        |     | filename of the detector for face detection}"
 		"{createData      |false| create data from the detection process}"
 		"{referenceImage  |     | reference image to create data}"
+		"{displayOutput   |false| display the output}"
 	};
 	
 	CommandLineParser parser(argc, argv, keys);
@@ -172,6 +174,8 @@ int main(int argc, char** argv) {
 	isUsingImage = parser.get<bool>("image");
 	// The flag to trigger creating data
 	isCreatingData = parser.get<bool>("createData");
+	// The flag to trigger displaying output
+	displayOutput = parser.get<bool>("displayOutput");
 
 
 	

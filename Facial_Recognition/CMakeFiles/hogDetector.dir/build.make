@@ -160,7 +160,6 @@ hogDetector: /usr/lib/aarch64-linux-gnu/libXext.so
 hogDetector: /usr/lib/aarch64-linux-gnu/libpng.so
 hogDetector: /usr/lib/aarch64-linux-gnu/libz.so
 hogDetector: /usr/lib/aarch64-linux-gnu/libjpeg.so
-hogDetector: /usr/lib/libatlas.so
 hogDetector: /usr/lib/libcblas.so
 hogDetector: /usr/lib/liblapack.so
 hogDetector: /usr/local/cuda-9.0/lib64/libcublas.so
