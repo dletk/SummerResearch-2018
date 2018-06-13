@@ -27,12 +27,16 @@ for line in rawData:
 
 # %% Check the processed data
 print(data[11234])
-print(labels[11234])
+print(labels[1])
 
 # %% Make a request for each image url and save it as an image to the database, with list of label attached
-for i in range(10)
-    response = requests.get(data[i])
-    if response.status_code == 200:
-        with open("./faceScrub/"+str(i)+".jpg", "wb") as fileImage:
-            fileImage.write(response.content)
-            
+for i in range(len(data)):
+    try:
+        response = requests.get(data[i])
+        if response.status_code == 200:
+            fileName = labels[i]
+            with open("./faceScrub/"+fileName+ " "+ str(i)+".jpg", "wb") as fileImage:
+                fileImage.write(response.content)
+    except:
+        # Catch all Error
+        print("Cannot access url: " + data[i])
