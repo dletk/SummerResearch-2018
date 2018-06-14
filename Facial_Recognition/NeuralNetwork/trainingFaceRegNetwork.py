@@ -102,4 +102,4 @@ checker = keras.callbacks.ModelCheckpoint("neuralNetworkFaceReg.h5", save_best_o
 
 # %% ==============================================
 # Train the model
-model.fit(list_images, labels, batch_size=256, epochs=100, validation_split=0.1, callbacks=[checker])
+model.fit(list_images, labels, batch_size=64, epochs=100, validation_split=0.1, callbacks=[checker])
