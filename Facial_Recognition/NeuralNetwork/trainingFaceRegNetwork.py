@@ -12,7 +12,7 @@ from tensorflow import keras
 parent_directory = "../alignedImages/data/cfp-dataset/data/*"
 # Construct the images path list, the list is in random order
 image_paths = sorted(glob.glob(parent_directory))
-print(image_paths)
+# print(image_paths)
 
 # %% ===========================================
 # Create a nparray containing all images
