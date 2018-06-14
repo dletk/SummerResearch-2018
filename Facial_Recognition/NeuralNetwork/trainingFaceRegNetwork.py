@@ -10,9 +10,9 @@ from tensorflow import keras
 # Load the images into numpy array, looping through all of the image using glob
 # The directory containing all the images
 parent_directory = "../alignedImages/data/cfp-dataset/data/*"
-# Construct the images path list, the list is in random order, so sort it as well
+# Construct the images path list, the list is in random order
 image_paths = sorted(glob.glob(parent_directory))
-# print(image_paths)
+print(image_paths)
 
 # %% ===========================================
 # Create a nparray containing all images
@@ -25,7 +25,7 @@ for path in image_paths:
     list_raw_images.append(image)
 
     # Process to find label
-    # The label is a number representing a person, it is the first
+    # The label which is a number representing a person, it is the first
     all_nums_in_path = re.findall(r"\d+", path)
     # The name of the file may contains some number other than the file index, so only take the last number to make sure
     file_index = all_nums_in_path[-1]
@@ -102,4 +102,4 @@ checker = keras.callbacks.ModelCheckpoint("neuralNetworkFaceReg.h5", save_best_o
 
 # %% ==============================================
 # Train the model
-model.fit(list_images, labels, batch_size=64, epochs=100, validation_split=0.1, callbacks=[checker])
+model.fit(list_images, labels, batch_size=16, epochs=100, validation_split=0.1, callbacks=[checker])
