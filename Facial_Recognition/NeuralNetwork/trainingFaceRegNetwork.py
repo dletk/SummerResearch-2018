@@ -13,7 +13,7 @@ from tensorflow import keras
 parent_directory = "../alignedImages/data/cfp-dataset/data/*"
 # Construct the images path list, the list is in random order
 image_paths = sorted(glob.glob(parent_directory))
-random.shuffle(image_paths)
+# random.shuffle(image_paths)
 # print(image_paths)
 
 # %% ===========================================
@@ -68,14 +68,11 @@ model = keras.models.Sequential()
 # %% ==============================================
 # Add to layers to model
 # The input shape must be declared for the first layer (the layter RIGHT AFTER the input)
-model.add(keras.layers.Conv2D(filters=128, kernel_size=(3,3), padding="valid", activation="relu", input_shape=(192,176,1)))
+model.add(keras.layers.Conv2D(filters=64, kernel_size=(3,3), padding="valid", activation="relu", input_shape=(192,176,1)))
 # After doing convolution, using a max pooling layer to reduce the size
 model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
 # Second layer
-model.add(keras.layers.Conv2D(filters=64, kernel_size=(3,3), activation="relu", padding="valid"))
-model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
-# Third layer
 model.add(keras.layers.Conv2D(filters=32, kernel_size=(3,3), activation="relu", padding="valid"))
 model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
@@ -100,8 +97,8 @@ model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accur
 
 # %% ==============================================
 # Prepare the model check point to save the model after every epoch
-checker = keras.callbacks.ModelCheckpoint("neuralNetworkFaceReg.h5", save_best_only=True)
+checker = keras.callbacks.ModelCheckpoint("neuralNetworkFaceReg.h5", save_best_only=True, monitor="loss")
 
 # %% ==============================================
 # Train the model
-model.fit(list_images, labels, batch_size=16, epochs=100, validation_split=0.1, callbacks=[checker])
+model.fit(list_images, labels, batch_size=16, epochs=100, callbacks=[checker])
