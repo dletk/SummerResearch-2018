@@ -3,6 +3,7 @@ import numpy as np
 import re
 import cv2 as cv
 import glob
+import random
 
 from tensorflow import keras
 
@@ -12,6 +13,7 @@ from tensorflow import keras
 parent_directory = "../alignedImages/data/cfp-dataset/data/*"
 # Construct the images path list, the list is in random order
 image_paths = sorted(glob.glob(parent_directory))
+random.shuffle(image_paths)
 # print(image_paths)
 
 # %% ===========================================
