@@ -23,7 +23,7 @@ image_paths = sorted(glob.glob(parent_directory))
 list_raw_images = []
 labels = []
 last_label = ""
-current_label = 0
+current_label = -1
 for path in image_paths:
     # Get the image
     image = cv.imread(path, cv.IMREAD_GRAYSCALE)
@@ -38,26 +38,40 @@ for path in image_paths:
         last_label = individial_name
     labels.append(current_label)
 
-# Create a numpy from list
-list_images = np.asarray(list_raw_images)
+# Create data and validation data
+# Create a list of index to take away from data as validation, keep 5% as validation ( which means // 20)
+validation_index = [random.randint(0, len(list_raw_images)-1) for x in range(len(list_raw_images) // 20)]
+validation_data = []
+validation_labels = []
+for index in validation_index:
+    validation_data.append(list_raw_images.pop(index))
+    validation_labels.append(labels.pop(index))
+
+data = np.asarray(list_raw_images)
 labels = np.asarray(labels)
+validation_data = np.asarray(validation_data)
+validation_labels = np.asarray(validation_labels)
 
 # %% ===========================================
 # Check the input
-print(list_images.shape)
+print(data.shape)
 print(labels.shape)
+print(validation_data.shape)
+print(validation_labels.shape)
 
 # %% ===========================================
 # Transform the shape of the input data to (size, height, width, 1)
-list_images = list_images.reshape(list_images.shape[0], list_images.shape[1], list_images.shape[2], 1)
+data = data.reshape(data.shape[0], data.shape[1], data.shape[2], 1)
+validation_data = validation_data.reshape(validation_data.shape[0], validation_data.shape[1], validation_data.shape[2], 1)
 # Transform the labels array into categorical
 labels = keras.utils.to_categorical(labels)
+validation_labels = keras.utils.to_categorical(validation_labels)
 # Get the total number of categories in the data
 numLabels = labels.shape[1]
 
 # %% ===========================================
 # Check the transformation
-print(list_images.shape)
+print(data.shape)
 print(labels.shape)
 print(numLabels)
 
@@ -100,8 +114,8 @@ model.compile(optimizer=keras.optimizers.SGD(lr=0.001), loss="categorical_crosse
 
 # %% ==============================================
 # Prepare the model check point to save the model after every epoch
-checker = keras.callbacks.ModelCheckpoint("neuralNetworkFaceReg.h5", save_best_only=True, monitor="loss")
+checker = keras.callbacks.ModelCheckpoint("neuralNetworkFaceReg.h5", save_best_only=True, monitor="val_loss")
 
 # %% ==============================================
 # Train the model
-model.fit(list_images, labels, batch_size=16, epochs=100, callbacks=[checker])
+model.fit(data, labels, batch_size=16, epochs=100, callbacks=[checker], validation_data=(validation_data, validation_labels))
