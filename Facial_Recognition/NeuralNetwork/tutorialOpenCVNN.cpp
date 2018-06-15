@@ -13,7 +13,7 @@ int main(int argc, char** argv) {
 	
 	cvtColor(image, image, COLOR_BGR2GRAY);
 	
-	bitwise_not(image, image);
+	// bitwise_not(image, image);
 	
 	imshow("image", image);
 	

@@ -1,10 +1,12 @@
 # %% Import libraries
 from tensorflow import keras
 import tensorflow as tf
+from tensorflow.python.keras import backend as K
 import sys
+import graph_util
 
 # %% Load the model in from user input
-model = keras.models.load_model(sys.argv[2])
+model = keras.models.load_model(sys.argv[1])
 
 # %% Export the graph compatible with cv2
 # Serialize and fix the graph
