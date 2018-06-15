@@ -93,7 +93,7 @@ model.summary()
 
 # %% ==============================================
 # Compile the model
-model.compile(optimizer="adam", loss="categorical_crossentropy", metrics=["accuracy"])
+model.compile(optimizer=keras.optimizers.SGD(lr=0.001), loss="categorical_crossentropy", metrics=["accuracy"])
 
 # %% ==============================================
 # Prepare the model check point to save the model after every epoch

@@ -107,8 +107,10 @@ void findLandmarks(Mat image, vector<Rect> faces, String file) {
 	}
 	
 	// Display it all on the screen
-	win.clear_overlay();
-	win.set_image(cvImage);
+	if (!isCreatingData) {
+		win.clear_overlay();
+		win.set_image(cvImage);
+	}
     
     if (isUsingImage) {
     	unsigned long temp1;
@@ -281,32 +283,38 @@ int main(int argc, char** argv) {
 	
 	// Using a static image as input instead of a video stream
 	if (isUsingImage) {
-		for (int i=0; i<files.size(); i++) {
-			tempImage = imread(files[i]);
+		try {
+			for (int i=0; i<files.size(); i++) {
+				cout << "Working on " << files[i] << endl;
+				tempImage = imread(files[i]);
 			
-			if (tempImage.empty()) {
-				cout << files[i] << " is not a valid image." << endl;
-				continue;
-			} else {	
-				// Resize the image to larger scale will help us to find smaller face, but it will requires more time to run and reduce the fps
-				resize(tempImage, image, Size(), resizeScale, resizeScale);
+				if (tempImage.empty()) {
+					cout << files[i] << " is not a valid image." << endl;
+					continue;
+				} else {	
+					// Resize the image to larger scale will help us to find smaller face, but it will requires more time to run and reduce the fps
+					resize(tempImage, image, Size(), resizeScale, resizeScale);
 		
-				cvtColor(image, grayImage, COLOR_BGR2GRAY);
-				originalImageGray = grayImage.clone();
-		
-		
-				if (isUsingCuda) {
-					// Convert the image to gray scale
 					cvtColor(image, grayImage, COLOR_BGR2GRAY);
 					originalImageGray = grayImage.clone();
-					cudaImage.upload(grayImage);
-					cudaDetector->detectMultiScale(cudaImage, foundLocations);
-				} else {
-					detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
+		
+		
+					if (isUsingCuda) {
+						// Convert the image to gray scale
+						cvtColor(image, grayImage, COLOR_BGR2GRAY);
+						originalImageGray = grayImage.clone();
+						cudaImage.upload(grayImage);
+						cudaDetector->detectMultiScale(cudaImage, foundLocations);
+					} else {
+						detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
 			
+					}
+					drawPeople(image, foundLocations, vector<double>(), 0.0, files[i]);
+					cout << "Done with " << files[i] << endl;
 				}
-				drawPeople(image, foundLocations, vector<double>(), 0.0, files[i]);
 			}
+		} catch (cv::Exception & e) {
+			cerr << e.msg << endl;
 		}
 		exit(0);
 	}

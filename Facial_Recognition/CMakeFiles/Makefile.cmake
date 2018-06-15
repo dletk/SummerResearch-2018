@@ -32,7 +32,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake-3.5/Modules/CMakeSystemSpecificInformation.cmake"
   "/usr/share/cmake-3.5/Modules/CMakeSystemSpecificInitialize.cmake"
   "/usr/share/cmake-3.5/Modules/CheckFortranFunctionExists.cmake"
-  "/usr/share/cmake-3.5/Modules/CheckFunctionExists.c"
   "/usr/share/cmake-3.5/Modules/CheckFunctionExists.cmake"
   "/usr/share/cmake-3.5/Modules/CheckIncludeFile.cmake"
   "/usr/share/cmake-3.5/Modules/CheckIncludeFileCXX.cmake"
