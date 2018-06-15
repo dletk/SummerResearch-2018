@@ -4,7 +4,7 @@ import tensorflow as tf
 import sys
 
 # %% Load the model in from user input
-model = keras.models.load_model(argv[2])
+model = keras.models.load_model(sys.argv[2])
 
 # %% Export the graph compatible with cv2
 # Serialize and fix the graph
