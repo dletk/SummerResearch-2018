@@ -57,9 +57,9 @@ numLabels = labels.shape[1]
 
 # %% ===========================================
 # Check the transformation
-list_images.shape
-labels.shape
-numLabels
+print(list_images.shape)
+print(labels.shape)
+print(numLabels)
 
 # CREATING MODEL
 
