@@ -49,8 +49,8 @@ temp_labels = labels[:]
 validation_data = []
 validation_labels = []
 for index in validation_index:
-    validation_data.append(temp_images.pop(index))
-    validation_labels.append(temp_labels.pop(index))
+    validation_data.append(temp_images[index])
+    validation_labels.append(temp_labels[index])
     list_raw_images.pop(index)
     labels.pop(index)
 
