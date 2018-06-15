@@ -21,7 +21,7 @@ image_paths = sorted(glob.glob(parent_directory))
 # Create a list to store raw image
 # Also, create the label list as well
 list_raw_images = []
-labels = []
+labels_raw_images = []
 last_label = ""
 current_label = -1
 for path in image_paths:
@@ -36,14 +36,14 @@ for path in image_paths:
     if individial_name != last_label:
         current_label += 1
         last_label = individial_name
-    labels.append(current_label)
+    labels_raw_images.append(current_label)
 
 # Create data and validation data
-# Create a list of index to take away from data as validation, keep 5% as validation ( which means // 20)
-validation_index = [random.randint(0, len(list_raw_images)-1) for x in range(len(list_raw_images) // 20)]
+# Create a set of index to take away from data as validation, keep at most 5% as validation ( which means // 20)
+validation_index = set([random.randint(0, len(list_raw_images)-1) for x in range(len(list_raw_images) // 20)])
 # Create temporary copy of labels and list_raw_images
 temp_images = list_raw_images[:] # We have to use slice because python is pass py reference
-temp_labels = labels[:]
+temp_labels = labels_raw_images[:]
 
 # Creating validation data by looping through the main data and take out elements at given indices
 validation_data = []
@@ -51,9 +51,15 @@ validation_labels = []
 for index in validation_index:
     validation_data.append(temp_images[index])
     validation_labels.append(temp_labels[index])
-    list_raw_images.pop(index)
-    labels.pop(index)
+# Prepare the train data by excluding the validation data
+data = []
+labels = []
+for i in range(len(list_raw_images)):
+    if i not in validation_index:
+        data.append(list_raw_images[i])
+        labels.append(labels_raw_images[i])
 
+# Convert all the array to nparray
 data = np.asarray(list_raw_images)
 labels = np.asarray(labels)
 validation_data = np.asarray(validation_data)
