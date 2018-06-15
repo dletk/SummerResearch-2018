@@ -41,11 +41,18 @@ for path in image_paths:
 # Create data and validation data
 # Create a list of index to take away from data as validation, keep 5% as validation ( which means // 20)
 validation_index = [random.randint(0, len(list_raw_images)-1) for x in range(len(list_raw_images) // 20)]
+# Create temporary copy of labels and list_raw_images
+temp_images = list_raw_images[:] # We have to use slice because python is pass py reference
+temp_labels = labels[:]
+
+# Creating validation data by looping through the main data and take out elements at given indices
 validation_data = []
 validation_labels = []
 for index in validation_index:
-    validation_data.append(list_raw_images.pop(index))
-    validation_labels.append(labels.pop(index))
+    validation_data.append(temp_images.pop(index))
+    validation_labels.append(temp_labels.pop(index))
+    list_raw_images.pop(index)
+    labels.pop(index)
 
 data = np.asarray(list_raw_images)
 labels = np.asarray(labels)
