@@ -10,7 +10,7 @@ from tensorflow import keras
 # %% ===========================================
 # Load the images into numpy array, looping through all of the image using glob
 # The directory containing all the images
-parent_directory = "../alignedImages/data/cfp-dataset/data/*"
+parent_directory = "../alignedImages/data/faceScrub/*"
 # Construct the images path list, the list is in random order
 image_paths = sorted(glob.glob(parent_directory))
 # random.shuffle(image_paths)
@@ -22,18 +22,21 @@ image_paths = sorted(glob.glob(parent_directory))
 # Also, create the label list as well
 list_raw_images = []
 labels = []
+last_label = ""
+current_label = 0
 for path in image_paths:
+    # Get the image
     image = cv.imread(path, cv.IMREAD_GRAYSCALE)
     list_raw_images.append(image)
-
-    # Process to find label
-    # The label which is a number representing a person, it is the first
-    all_nums_in_path = re.findall(r"\d+", path)
-    # The name of the file may contains some number other than the file index, so only take the last number to make sure
-    file_index = all_nums_in_path[-1]
-    # There are maximum 10 pics of a label, marked from 0-9, so ignore the last number is good enough
-    fileLabel = int(file_index[:-1]) if len(file_index) > 1 else 0
-    labels.append(fileLabel)
+    # Prepare the label for the current image
+    # In the faceScrub database, the first 2 word make up the label
+    file_names = path.split()[:2]
+    individial_name = file_names[0] + file_names[1]
+    # If the name is the different with the last name, we are switching to a new individial
+    if individial_name != last_label:
+        current_label += 1
+        last_label = individial_name
+    labels.append(current_label)
 
 # Create a numpy from list
 list_images = np.asarray(list_raw_images)
