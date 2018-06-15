@@ -28,6 +28,7 @@ for path in image_paths:
     # Get the image
     image = cv.imread(path, cv.IMREAD_GRAYSCALE)
     list_raw_images.append(image)
+
     # Prepare the label for the current image
     # In the faceScrub database, the first 2 word make up the label
     file_names = path.split()[:2]
@@ -41,16 +42,14 @@ for path in image_paths:
 # Create data and validation data
 # Create a set of index to take away from data as validation, keep at most 5% as validation ( which means // 20)
 validation_index = set([random.randint(0, len(list_raw_images)-1) for x in range(len(list_raw_images) // 20)])
-# Create temporary copy of labels and list_raw_images
-temp_images = list_raw_images[:] # We have to use slice because python is pass py reference
-temp_labels = labels_raw_images[:]
 
 # Creating validation data by looping through the main data and take out elements at given indices
 validation_data = []
 validation_labels = []
 for index in validation_index:
-    validation_data.append(temp_images[index])
-    validation_labels.append(temp_labels[index])
+    validation_data.append(list_raw_images[index])
+    validation_labels.append(labels_raw_images[index])
+
 # Prepare the train data by excluding the validation data
 data = []
 labels = []
@@ -60,7 +59,7 @@ for i in range(len(list_raw_images)):
         labels.append(labels_raw_images[i])
 
 # Convert all the array to nparray
-data = np.asarray(list_raw_images)
+data = np.asarray(data)
 labels = np.asarray(labels)
 validation_data = np.asarray(validation_data)
 validation_labels = np.asarray(validation_labels)
