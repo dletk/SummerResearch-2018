@@ -11,7 +11,7 @@ from tensorflow import keras
 # Load the images into numpy array, looping through all of the image using glob
 # The directory containing all the images
 parent_directory = "../alignedImages/data/faceScrub/*"
-# Construct the images path list, the list is in random order
+# Construct the images path list in sorted order
 image_paths = sorted(glob.glob(parent_directory))
 # random.shuffle(image_paths)
 # print(image_paths)
@@ -24,6 +24,7 @@ list_raw_images = []
 labels_raw_images = []
 last_label = ""
 current_label = -1
+labels_file = open("labels.txt", "w")
 for path in image_paths:
     # Get the image
     image = cv.imread(path, cv.IMREAD_GRAYSCALE)
@@ -37,18 +38,27 @@ for path in image_paths:
     if individial_name != last_label:
         current_label += 1
         last_label = individial_name
+        labels_file.write(last_label+"\n")
     labels_raw_images.append(current_label)
+labels_file.close()
 
 # Create data and validation data
-# Create a set of index to take away from data as validation, keep at most 5% as validation ( which means // 20)
-validation_index = set([random.randint(0, len(list_raw_images)-1) for x in range(len(list_raw_images) // 20)])
+# Create a set of index to take away from data as validation
+validation_index = set()
+set_labels = set(labels_raw_images)
 
-# Creating validation data by looping through the main data and take out elements at given indices
+# Creating validation data by looping through the main data and take out elements at random indices
 validation_data = []
 validation_labels = []
-for index in validation_index:
-    validation_data.append(list_raw_images[index])
-    validation_labels.append(labels_raw_images[index])
+
+for label in set_labels:
+	label_indices = [i for i, val in enumerate(labels_raw_images) if val==label]
+	# Take 3 images out to use as validation set
+	for i in range(3):
+		index = random.choice(label_indices)
+		validation_data.append(list_raw_images[index])
+		validation_labels.append(label)
+		validation_index.add(index)
 
 # Prepare the train data by excluding the validation data
 data = []
@@ -97,13 +107,17 @@ model = keras.models.Sequential()
 # %% ==============================================
 # Add to layers to model
 # The input shape must be declared for the first layer (the layter RIGHT AFTER the input)
-model.add(keras.layers.Conv2D(filters=64, kernel_size=(3,3), padding="valid", activation="relu", input_shape=(192,176,1)))
+model.add(keras.layers.Conv2D(filters=128, kernel_size=(5,5), padding="valid", activation="relu", input_shape=(192,176,1)))
 # After doing convolution, using a max pooling layer to reduce the size
-model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(keras.layers.MaxPooling2D(pool_size=(3, 3)))
 
 # Second layer
+model.add(keras.layers.Conv2D(filters=64, kernel_size=(4,4), activation="relu", padding="valid"))
+model.add(keras.layers.MaxPooling2D(pool_size=(3, 3)))
+
+# Third layer
 model.add(keras.layers.Conv2D(filters=32, kernel_size=(3,3), activation="relu", padding="valid"))
-model.add(keras.layers.MaxPooling2D(pool_size=(2, 2)))
+model.add(keras.layers.MaxPooling2D(pool_size=(3, 3)))
 
 # Add a flatten layer to flat the input before feed into Dense layer
 model.add(keras.layers.Flatten())
@@ -122,12 +136,14 @@ model.summary()
 
 # %% ==============================================
 # Compile the model
-model.compile(optimizer=keras.optimizers.SGD(lr=0.001), loss="categorical_crossentropy", metrics=["accuracy"])
+model.compile(optimizer=keras.optimizers.SGD(0.001), loss="categorical_crossentropy", metrics=["accuracy"])
 
 # %% ==============================================
 # Prepare the model check point to save the model after every epoch
-checker = keras.callbacks.ModelCheckpoint("neuralNetworkFaceReg.h5", save_best_only=True, monitor="val_loss")
+checker = keras.callbacks.ModelCheckpoint("neuralNetworkFaceReg.h5", save_best_only=True, monitor="val_acc")
 
 # %% ==============================================
 # Train the model
-model.fit(data, labels, batch_size=16, epochs=100, callbacks=[checker], validation_data=(validation_data, validation_labels))
+print(labels.shape)
+print(validation_labels.shape)
+model.fit(data, labels, batch_size=32, epochs=1000, callbacks=[checker], validation_data=(validation_data, validation_labels))
