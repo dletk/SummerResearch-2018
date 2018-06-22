@@ -107,16 +107,16 @@ model = keras.models.Sequential()
 # %% ==============================================
 # Add to layers to model
 # The input shape must be declared for the first layer (the layter RIGHT AFTER the input)
-model.add(keras.layers.Conv2D(filters=128, kernel_size=(5,5), padding="valid", activation="relu", input_shape=(192,176,1)))
+model.add(keras.layers.Conv2D(filters=256, kernel_size=(5,5), padding="valid", activation="relu", input_shape=(192,176,1)))
 # After doing convolution, using a max pooling layer to reduce the size
 model.add(keras.layers.MaxPooling2D(pool_size=(3, 3)))
 
 # Second layer
-model.add(keras.layers.Conv2D(filters=64, kernel_size=(4,4), activation="relu", padding="valid"))
+model.add(keras.layers.Conv2D(filters=128, kernel_size=(4,4), activation="relu", padding="valid"))
 model.add(keras.layers.MaxPooling2D(pool_size=(3, 3)))
 
 # Third layer
-model.add(keras.layers.Conv2D(filters=32, kernel_size=(3,3), activation="relu", padding="valid"))
+model.add(keras.layers.Conv2D(filters=64, kernel_size=(3,3), activation="relu", padding="valid"))
 model.add(keras.layers.MaxPooling2D(pool_size=(3, 3)))
 
 # Add a flatten layer to flat the input before feed into Dense layer
