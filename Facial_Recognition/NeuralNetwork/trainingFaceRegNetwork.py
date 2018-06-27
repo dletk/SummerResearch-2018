@@ -110,10 +110,14 @@ model = keras.models.Sequential()
 model.add(keras.layers.Conv2D(filters=256, kernel_size=(5,5), padding="valid", activation="relu", input_shape=(192,176,1)))
 # After doing convolution, using a max pooling layer to reduce the size
 model.add(keras.layers.MaxPooling2D(pool_size=(3, 3)))
+# Added dropout layers to avoid overfitting
+model.add(keras.layers.Dropout(0.3))
 
 # Second layer
 model.add(keras.layers.Conv2D(filters=128, kernel_size=(4,4), activation="relu", padding="valid"))
 model.add(keras.layers.MaxPooling2D(pool_size=(3, 3)))
+# Added dropout
+model.add(keras.layers.Dropout(0.4))
 
 # Third layer
 model.add(keras.layers.Conv2D(filters=64, kernel_size=(3,3), activation="relu", padding="valid"))
@@ -123,7 +127,8 @@ model.add(keras.layers.MaxPooling2D(pool_size=(3, 3)))
 model.add(keras.layers.Flatten())
 
 # Using the dense layers to analyze and produce out come
-model.add(keras.layers.Dense(256, activation="relu"))
+model.add(keras.layers.Dense(512, activation="relu"))
+# model.add(keras.layers.Dense(256, activation="relu"))
 model.add(keras.layers.Dense(128, activation="relu"))
 
 # Output the layer

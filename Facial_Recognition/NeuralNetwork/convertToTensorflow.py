@@ -16,4 +16,4 @@ graph_def = tf.graph_util.convert_variables_to_constants(sess, graph_def, [model
 graph_util.make_cv2_compatible(graph_def)
 
 # %% Create the frozen model from the current model
-tf.train.write_graph(graph_def, '', 'model.pb', as_text=False)
+tf.train.write_graph(graph_def, '', 'model.pbtxt', as_text=True)
