@@ -32,3 +32,7 @@ At the moment, the best accuracy is 75% resulted from the following structure:
 |Dense | 128 | activation="relu" |
 |Dense | num_labels | activation="softmax" |
 
+## Notice on the network structure
+
+Because openCV deep neural network does not support tensorflow dropout layer at the time of writing, the use of this type of layer was avoided for the first trainings. However, the network nevers exceeds 60% accuracy with this setting. It is also worth noticing that the network learn the training data very well in this setting with 99% accuracy after less than 100 epochs. This indicates the effect of overfitting. Adding the dropout layers into the network seemed to solve this problem and improved the validation accuracy to 65% and then 75% rapidly. The network learn the training data in slower speed, making it extract more information and features to improve the validation accuracy along the way.
+
