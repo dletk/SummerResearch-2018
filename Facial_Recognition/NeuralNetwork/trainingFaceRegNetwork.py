@@ -5,12 +5,12 @@ import cv2 as cv
 import glob
 import random
 
-from tensorflow import keras
 import tensorflow as tf
-from keras.backend.tensorflow_backend import set_session
-
 config = tf.ConfigProto()
 config.gpu_options.per_process_gpu_memory_fraction = 0.3
+
+from tensorflow import keras
+from keras.backend.tensorflow_backend import set_session
 set_session(tf.Session(config=config))
 
 # %% ===========================================
