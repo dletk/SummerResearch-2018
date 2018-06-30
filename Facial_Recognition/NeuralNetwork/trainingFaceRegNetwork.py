@@ -127,6 +127,7 @@ model.add(keras.layers.MaxPooling2D(pool_size=(3, 3)))
 model.add(keras.layers.Flatten())
 
 # Using the dense layers to analyze and produce out come
+model.add(keras.layers.Dropout(0.3))
 model.add(keras.layers.Dense(512, activation="relu"))
 # model.add(keras.layers.Dense(256, activation="relu"))
 model.add(keras.layers.Dense(128, activation="relu"))
