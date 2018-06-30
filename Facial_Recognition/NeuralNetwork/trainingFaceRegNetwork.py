@@ -6,6 +6,12 @@ import glob
 import random
 
 from tensorflow import keras
+import tensorflow as tf
+from keras.backend.tensorflow_backend import set_session
+
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction = 0.3
+set_session(tf.Session(config=config))
 
 # %% ===========================================
 # Load the images into numpy array, looping through all of the image using glob
@@ -152,4 +158,4 @@ checker = keras.callbacks.ModelCheckpoint("neuralNetworkFaceReg.h5", save_best_o
 # Train the model
 print(labels.shape)
 print(validation_labels.shape)
-model.fit(data, labels, batch_size=6, epochs=1000, callbacks=[checker], validation_data=(validation_data, validation_labels))
+model.fit(data, labels, batch_size=32, epochs=1000, callbacks=[checker], validation_data=(validation_data, validation_labels))
