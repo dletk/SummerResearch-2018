@@ -9,6 +9,7 @@ using namespace cv;
 
 int main(int argc, char** argv) {
 	String model = "./model.pb";
+	String modeltxt = "./model.pbtxt";
 	Mat image = imread("./example.jpg");
 	
 	cvtColor(image, image, COLOR_BGR2GRAY);
@@ -21,7 +22,7 @@ int main(int argc, char** argv) {
 	
 	//String modelTxt = "./fashionMNISTmodel.pbtxt";
 	
-	cv::dnn::Net net = cv::dnn::readNetFromTensorflow(model);
+	cv::dnn::Net net = cv::dnn::readNetFromTensorflow(model, modeltxt);
 	
 	if (!net.empty()) {
 		cout << "Loaded network successfully" << endl;
