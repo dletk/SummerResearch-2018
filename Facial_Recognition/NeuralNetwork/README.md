@@ -39,10 +39,21 @@ Because openCV deep neural network does not support tensorflow dropout layer at 
 ## HOW TO LOAD MODEL THE TRAINED MODEL FROM KERAS TO OPENCV
 
 OpenCV currently does not support the functionality to load a Keras (h5) model directly to its neural network framework (at the time of writing). However, it does support loading TensorFlow model and making prediction. However, not all type of layers in TensorFlow and Keras are supported. Therefore, there are some prerequisites and preparation to modify the pretrained Keras model. Follow the below instructions **CAREFULLY**:
-
+- TODO: All of these steps can be put into a bash script.
 - Run the script convertToTensorflow.py to convert a Keras model to a TensorFlow model
 ```
-
+python3 convertToTensorflow.py file/path/to/model.pb
 ```
-
+- Run the following code (provided by Tensorflow) to optimize the model. The name of input and output can be different depending on the structure of the network. Check the model.pb to make sure.
+```
+python3 /usr/local/lib/python3.5/dist-packages/tensorflow/python/tools/optimize_for_inference.py   --input model.pb   --output opt_model.pb   --input_names conv2d_1_input   --output_names dense_3/Softmax
+```
+- Run the script makeTextGraphRepresentation.py to export the model.pb into a model.pbtxt file. This file represent the model structure, so we can perform manual modification on the model by changing this file.
+```
+python3 makeTextGraphRepresentation.py
+```
+- **Important** Delete all the drop out layers. Change the input of the layer right after the last drop out to the one currently before it (after all the deletions).
+- **Important** Delete all the Flatten layers except the last one "Reshape". Delete all the "flatten" inputs that it has as well. Change its op from "Reshape" to "Flatten".
+- The reference for these 2 steps can be found [here](http://answers.opencv.org/question/183682/opencv-dnn-import-dropout-layer-error-after-finetuning-keras-vgg16/).
+- Should be good to go!!!
 TODO: All of the 
