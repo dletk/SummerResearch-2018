@@ -1,21 +1,19 @@
-# %% Import libraries
+from tensorflow.python.keras import backend as K
 from tensorflow import keras
 import tensorflow as tf
-from tensorflow.python.keras import backend as K
+from tensorflow.python.framework import graph_util
+from tensorflow.python.framework import graph_io
 import sys
-import graph_util
 
-# %% Load the model in from user input
 model = keras.models.load_model(sys.argv[1])
-
 K.set_learning_phase(0)
 
-# %% Export the graph compatible with cv2
-# Serialize and fix the graph
-sess = K.get_session()
-graph_def = sess.graph.as_graph_def(add_shapes=True)
-graph_def = tf.graph_util.convert_variables_to_constants(sess, graph_def, [model.output.name.split(':')[0]])
-#graph_util.make_cv2_compatible(graph_def)
+pred_node_names = [None]
+pred = [None]
+for i in range(1):
+    pred_node_names[i] = "output_node"+str(i)
+    pred[i] = tf.identity(model.outputs[i], name=pred_node_names[i])
 
-# %% Create the frozen model from the current model
-tf.train.write_graph(graph_def, '', 'model.pb', as_text=False)
+sess = K.get_session()
+constant_graph = graph_util.convert_variables_to_constants(sess, sess.graph.as_graph_def(), pred_node_names)
+graph_io.write_graph(constant_graph, ".", "model.pb", as_text=False)

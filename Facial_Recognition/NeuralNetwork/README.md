@@ -36,3 +36,13 @@ At the moment, the best accuracy is 75% resulted from the following structure:
 
 Because openCV deep neural network does not support tensorflow dropout layer at the time of writing, the use of this type of layer was avoided for the first trainings. However, the network nevers exceeds 60% accuracy with this setting. It is also worth noticing that the network learn the training data very well in this setting with 99% accuracy after less than 100 epochs. This indicates the effect of overfitting. Adding the dropout layers into the network seemed to solve this problem and improved the validation accuracy to 65% and then 75% rapidly. The network learn the training data in slower speed, making it extract more information and features to improve the validation accuracy along the way.
 
+## HOW TO LOAD MODEL THE TRAINED MODEL FROM KERAS TO OPENCV
+
+OpenCV currently does not support the functionality to load a Keras (h5) model directly to its neural network framework (at the time of writing). However, it does support loading TensorFlow model and making prediction. However, not all type of layers in TensorFlow and Keras are supported. Therefore, there are some prerequisites and preparation to modify the pretrained Keras model. Follow the below instructions **CAREFULLY**:
+
+- Run the script convertToTensorflow.py to convert a Keras model to a TensorFlow model
+```
+
+```
+
+TODO: All of the 
