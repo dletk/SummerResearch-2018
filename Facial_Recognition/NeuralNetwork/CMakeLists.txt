@@ -9,4 +9,12 @@ set_target_properties( tutorialOpenCVNN PROPERTIES
     CXX_STANDARD_REQUIRED ON
     CXX_EXTENSIONS ON
 )
+add_executable( createSVMForFacialRecognition createSVMForFacialRecognition.cpp )
+target_link_libraries( createSVMForFacialRecognition ${OpenCV_LIBS} )
+set_target_properties( createSVMForFacialRecognition PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED ON
+    CXX_EXTENSIONS ON
+)
+
 

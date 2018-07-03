@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named createSVMForFacialRecognition
+
+# Build rule for target.
+createSVMForFacialRecognition: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 createSVMForFacialRecognition
+.PHONY : createSVMForFacialRecognition
+
+# fast build rule for target.
+createSVMForFacialRecognition/fast:
+	$(MAKE) -f CMakeFiles/createSVMForFacialRecognition.dir/build.make CMakeFiles/createSVMForFacialRecognition.dir/build
+.PHONY : createSVMForFacialRecognition/fast
+
+#=============================================================================
 # Target rules for targets named tutorialOpenCVNN
 
 # Build rule for target.
@@ -122,6 +135,33 @@ tutorialOpenCVNN: cmake_check_build_system
 tutorialOpenCVNN/fast:
 	$(MAKE) -f CMakeFiles/tutorialOpenCVNN.dir/build.make CMakeFiles/tutorialOpenCVNN.dir/build
 .PHONY : tutorialOpenCVNN/fast
+
+createSVMForFacialRecognition.o: createSVMForFacialRecognition.cpp.o
+
+.PHONY : createSVMForFacialRecognition.o
+
+# target to build an object file
+createSVMForFacialRecognition.cpp.o:
+	$(MAKE) -f CMakeFiles/createSVMForFacialRecognition.dir/build.make CMakeFiles/createSVMForFacialRecognition.dir/createSVMForFacialRecognition.cpp.o
+.PHONY : createSVMForFacialRecognition.cpp.o
+
+createSVMForFacialRecognition.i: createSVMForFacialRecognition.cpp.i
+
+.PHONY : createSVMForFacialRecognition.i
+
+# target to preprocess a source file
+createSVMForFacialRecognition.cpp.i:
+	$(MAKE) -f CMakeFiles/createSVMForFacialRecognition.dir/build.make CMakeFiles/createSVMForFacialRecognition.dir/createSVMForFacialRecognition.cpp.i
+.PHONY : createSVMForFacialRecognition.cpp.i
+
+createSVMForFacialRecognition.s: createSVMForFacialRecognition.cpp.s
+
+.PHONY : createSVMForFacialRecognition.s
+
+# target to generate assembly for a file
+createSVMForFacialRecognition.cpp.s:
+	$(MAKE) -f CMakeFiles/createSVMForFacialRecognition.dir/build.make CMakeFiles/createSVMForFacialRecognition.dir/createSVMForFacialRecognition.cpp.s
+.PHONY : createSVMForFacialRecognition.cpp.s
 
 tutorialOpenCVNN.o: tutorialOpenCVNN.cpp.o
 
@@ -158,7 +198,11 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
+	@echo "... createSVMForFacialRecognition"
 	@echo "... tutorialOpenCVNN"
+	@echo "... createSVMForFacialRecognition.o"
+	@echo "... createSVMForFacialRecognition.i"
+	@echo "... createSVMForFacialRecognition.s"
 	@echo "... tutorialOpenCVNN.o"
 	@echo "... tutorialOpenCVNN.i"
 	@echo "... tutorialOpenCVNN.s"
