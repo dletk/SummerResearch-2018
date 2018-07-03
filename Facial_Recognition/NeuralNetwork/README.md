@@ -42,7 +42,7 @@ OpenCV currently does not support the functionality to load a Keras (h5) model d
 - TODO: All of these steps can be put into a bash script.
 - Run the script convertToTensorflow.py to convert a Keras model to a TensorFlow model
 ```
-python3 convertToTensorflow.py file/path/to/model.pb
+python3 convertToTensorflow.py file/path/to/modelPretrained.h5
 ```
 - Run the following code (provided by Tensorflow) to optimize the model. The name of input and output can be different depending on the structure of the network. Check the model.pb to make sure.
 ```
