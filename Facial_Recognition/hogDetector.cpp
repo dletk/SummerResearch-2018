@@ -81,7 +81,11 @@ void alignImage(Mat image, dlib::full_object_detection detectedMarks, String fil
 	
 	warpAffine(image, image, getAffineTransform(fromPoints, landmarksPositions), Size(176,192), INTER_CUBIC);
 	
-	imwrite(exportedDir+file, image);
+	
+	// Only export the aligned image to file if creating data
+	if (isCreatingData) {
+		imwrite(exportedDir+file, image);
+	}
 }
 
 // The method to find 68 facial landmarks from a list of detected faces
@@ -99,9 +103,8 @@ void findLandmarks(Mat image, vector<Rect> faces, String file) {
 		
 		// Detect the facial landmarks in the current bounding box
 		dlib::full_object_detection shape = pose_model(regionImage, faceSize);
-		if (isCreatingData) {
-			alignImage(faceRegion, shape, file);
-		}
+
+		alignImage(faceRegion, shape, file);
 		
 		cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
 		cout << "Size of face: " << rect.size() << endl;
@@ -277,13 +280,15 @@ int main(int argc, char** argv) {
 	// ATTENTION: The CUDA version only works with grayImage???
 	Mat grayImage;
 	
+	Mat imageReference = imread(referenceImagePath);
+	cvtColor(imageReference, grayImage, COLOR_BGR2GRAY);
+	createReferenceFace(grayImage);
+	
 	if (isCreatingData) {
-		Mat imageReference = imread(referenceImagePath);
-		cvtColor(imageReference, grayImage, COLOR_BGR2GRAY);
-		createReferenceFace(grayImage);
-		
 		exportedDir = "./alignedImages/";
 	}
+	
+	cout << "CREATED REFERENCE IMAGE" << endl;
 	
 	// Using a static image as input instead of a video stream
 	if (isUsingImage) {
