@@ -24,6 +24,7 @@ dlib::shape_predictor pose_model;
 vector<Point2f> landmarksPositions;
 
 bool isUsingCuda, isUsingImage, isCreatingData, displayOutput;
+int currentFrame;
 Mat originalImageGray;
 // Define the size of a face
 dlib::rectangle faceSize(0, 0, 176, 192);
@@ -213,6 +214,9 @@ int main(int argc, char** argv) {
 			appsink";
 	VideoCapture vidCap(1);
 	
+	// Set the count for current frame to be 0
+	currentFrame = 0;
+	
 	// Prepare different versions of the HOG detector because CUDA and sequential code have different types
 	Ptr<cuda::HOG> cudaDetector;
 	HOGDescriptor detector;
@@ -332,19 +336,24 @@ int main(int argc, char** argv) {
 		resize(tempImage, image, Size(), resizeScale, resizeScale);
 		auto time2 = chrono::system_clock::now();
 		
-		// Detect the object and store the location of objects into vector<rect>
-		if (isUsingCuda) {
-			// Convert the image into grayImage for the CUDA detector version
-			cvtColor(image, grayImage, COLOR_BGR2GRAY);
-			originalImageGray = grayImage.clone();
-			cudaImage.upload(grayImage);
-			cudaDetector->detectMultiScale(cudaImage, foundLocations);
-			// In order to find the confidences for all detections, set groupThreshold to 0
-			// cudaDetector->detectMultiScale(cudaImage, foundLocations, &confidences);				
-		} else {
-			detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
-			cvtColor(image, grayImage, COLOR_BGR2GRAY);
-			originalImageGray = grayImage.clone();
+		// ONly do the detection every 2 frames
+		if (currentFrame % 5 == 0) {
+		
+			// Detect the object and store the location of objects into vector<rect>
+			if (isUsingCuda) {
+				// Convert the image into grayImage for the CUDA detector version
+				cvtColor(image, grayImage, COLOR_BGR2GRAY);
+				originalImageGray = grayImage.clone();
+				cudaImage.upload(grayImage);
+				cudaDetector->detectMultiScale(cudaImage, foundLocations);
+				// In order to find the confidences for all detections, set groupThreshold to 0
+				// cudaDetector->detectMultiScale(cudaImage, foundLocations, &confidences);				
+			} else {
+				detector.detectMultiScale(image, foundLocations, 0, Size(8,8), Size(32,32), scaleFactor, 2, false);
+				cvtColor(image, grayImage, COLOR_BGR2GRAY);
+				originalImageGray = grayImage.clone();
+			}
+		
 		}
 		auto time3 = chrono::system_clock::now();
 		
@@ -356,6 +365,7 @@ int main(int argc, char** argv) {
 			drawPeople(image, foundLocations, confidences, 0.0);
 		}
 		
+		currentFrame += 1;
 
 		auto time4 = chrono::system_clock::now();
 		
