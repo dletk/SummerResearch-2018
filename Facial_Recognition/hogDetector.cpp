@@ -1,6 +1,7 @@
 #include<opencv2/opencv.hpp>
 #include<opencv2/ml.hpp>
 #include<opencv2/cudaobjdetect.hpp>
+#include<opencv2/dnn.hpp>
 
 #include<algorithm>
 #include<iostream>
@@ -28,6 +29,20 @@ int currentFrame;
 Mat originalImageGray;
 // Define the size of a face
 dlib::rectangle faceSize(0, 0, 176, 192);
+
+// Variable to make prediction for face recognition
+dnn::Net neuralNet;
+Ptr< ml::SVM > svmFaceRecognition;
+
+
+void prepareFacialRecognition(String model, String modeltxt, String svmFaceRegPath) {
+	cout << "Begin to load models and neural network for facial recognition" << endl;
+	// Load the neural network
+	neuralNet = dnn::readNetFromTensorflow(model, modeltxt);
+	// Load the SVM for facial recognition
+	svmFaceRecognition = ml::SVM::load(svmFaceRegPath);
+	cout << "Loaded neural network and facial recognition SVM" << endl;
+}
 
 
 // NOTE: ORDER OF FACIAL LANDMARKS IN DLIB
@@ -86,6 +101,12 @@ void alignImage(Mat image, dlib::full_object_detection detectedMarks, String fil
 	if (isCreatingData) {
 		imwrite(exportedDir+file, image);
 	}
+	
+	Mat inputBlob = dnn::blobFromImage(image);   //Convert Mat to dnn::Blob image batch
+    neuralNet.setInput(inputBlob);        //set the network input
+	Mat outMeasurement = neuralNet.forward();
+	
+	cout << svmFaceRecognition->predict(outMeasurement) << endl;
 }
 
 // The method to find 68 facial landmarks from a list of detected faces
@@ -165,6 +186,9 @@ int main(int argc, char** argv) {
 		"{createData      |false                    | create data from the detection process}"
 		"{referenceImage  |./referenceImage.jpg     | reference image to create data}"
 		"{displayOutput   |false                    | display the output}"
+		"{neuralNetModel  |model.pb                 | the .pb model file to load the network weight}"
+		"{neuralNetText   |model.pbtxt              | the .pbtxt file to load model structure}"
+		"{faceSVM         |faceSVM.yml              | name of the file to save the trained SVM}"
 	};
 	
 	CommandLineParser parser(argc, argv, keys);
@@ -191,6 +215,11 @@ int main(int argc, char** argv) {
 	int winWidth = parser.get<int>("winW");
 	int winHeight = parser.get<int>("winH");
 	double resizeScale = parser.get<double>("resizeScale");
+	
+	String neuralNetModel = parser.get<String>("neuralNetModel");
+	String neuralNetText = parser.get<String>("neuralNetText");
+	String faceSVM = parser.get<String>("faceSVM");
+	
 	
 	// Getting all the images in the directory of imagePath if using static images
 	// List of files name
@@ -289,6 +318,10 @@ int main(int argc, char** argv) {
 	}
 	
 	cout << "CREATED REFERENCE IMAGE" << endl;
+	
+	
+	// Prepare models and neural network for facial recognition step
+	prepareFacialRecognition(neuralNetModel, neuralNetText, faceSVM);
 	
 	// Using a static image as input instead of a video stream
 	if (isUsingImage) {
