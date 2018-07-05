@@ -154,17 +154,17 @@ int main(int argc, char** argv) {
 	// Prepare the commandline parser keys
 	const String keys = 
 	{
-		"{help h          |     | show help message}"
-		"{image           |false| run the program with static image instead of video stream}"
-		"{imgPth imagePath|     | path of the directory containing static images}"
-		"{winW winWidth	  |     | winSize width}"
-		"{winH winHeight  |     | winSize height}"
-		"{resizeScale     |1.5  | Resize scale to find smaller faces}"
-		"{cuda            |false| using CUDA}"
-		"{detector        |     | filename of the detector for face detection}"
-		"{createData      |false| create data from the detection process}"
-		"{referenceImage  |     | reference image to create data}"
-		"{displayOutput   |false| display the output}"
+		"{help h          |                         | show help message}"
+		"{image           |false                    | run the program with static image instead of video stream}"
+		"{imgPth imagePath|                         | path of the directory containing static images}"
+		"{winW winWidth	  |176                      | winSize width}"
+		"{winH winHeight  |192                      | winSize height}"
+		"{resizeScale     |1.5                      | Resize scale to find smaller faces}"
+		"{cuda            |false                    | using CUDA}"
+		"{detector        |                         | filename of the detector for face detection}"
+		"{createData      |false                    | create data from the detection process}"
+		"{referenceImage  |./referenceImage.jpg     | reference image to create data}"
+		"{displayOutput   |false                    | display the output}"
 	};
 	
 	CommandLineParser parser(argc, argv, keys);
