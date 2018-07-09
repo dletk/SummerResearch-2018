@@ -11,7 +11,7 @@ using namespace cv::ml;
 
 void loadImages(vector<Mat> &imagesList, vector<String> filePaths, int imageWidth, int imageHeight, vector<int> &labels);
 void computeFacialMeasurement(String model, String modeltxt, vector<Mat> &imagesList, vector<Mat> &measurementsList, bool showProgress);
-void convert_to_ml( const vector<Mat> &imagesList, Mat &trainData );
+void convert_to_ml( const vector<Mat> &measurementsList, Mat &trainData );
 
 // Little helping function to print out the progress, acquired from https://stackoverflow.com/questions/14539867/how-to-display-a-progress-indicator-in-pure-c-c-cout-printf
 #define PBSTR "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||"
@@ -75,8 +75,16 @@ void computeFacialMeasurement(String model, String modeltxt, vector<Mat> &images
     	
     	// Produce measurement
     	Mat output = net.forward();
-    	// Save the measurement
-    	measurementsList.push_back(output);
+    	//cout << output << endl;
+    	// Normalize the measurement
+    	//cuda::normalize(output, output, 0, 1, NORM_MINMAX,-1);
+    	
+    	// Save the measurement, NOTICE: THE OUTPUT MAT WILL BE REUSED EVEN IT IS CREATED EVERYTIME, SO DO A CLONE TO COPY THE DATA
+    	measurementsList.push_back(output.clone());
+    	//cout << "ele" << endl;
+		//for (Mat ele: measurementsList) {
+		//	cout << ele << endl;
+		//}
     	if (showProgress) {
     		printProgress(double (i) / double (imagesList.size()));
     	}
@@ -90,28 +98,29 @@ void computeFacialMeasurement(String model, String modeltxt, vector<Mat> &images
 * TrainData is a matrix of size (numSamples x max(numCols, numRows) per samples), in 32FC1.
 * Transposition of samples are made if needed.
 */
-void convert_to_ml(const vector< Mat > &imagesList, Mat& trainData ) {
+void convert_to_ml(const vector< Mat > &measurementsList, Mat& trainData ) {
     //--Convert data
-    const int rows = (int)imagesList.size();
-    const int cols = (int)std::max( imagesList[0].cols, imagesList[0].rows );
+    const int rows = (int)measurementsList.size();
+    const int cols = (int)std::max( measurementsList[0].cols, measurementsList[0].rows );
     
     
     Mat tmp( 1, cols, CV_32FC1 ); //< used for transposition if needed
     // Prepare the Mat containing the train data
     trainData = Mat( rows, cols, CV_32FC1 );
-    for( size_t i = 0 ; i < imagesList.size(); ++i ) {
+    for( size_t i = 0 ; i < measurementsList.size(); ++i ) {
     	
     	// Check if the size of the current sample is appropriate to process
-    	// A sample (which is a HOG descriptor) should have 1 row OR 1 col. If the sample has 1 row, that is a normal case, 
+    	// A sample should have 1 row OR 1 col. If the sample has 1 row, that is a normal case, 
     	// If a sample has 1 cols, it needs to be transpose before being added to train data.
-        CV_Assert( imagesList[i].cols == 1 || imagesList[i].rows == 1 );
+        CV_Assert( measurementsList[i].cols == 1 || measurementsList[i].rows == 1 );
         
         // Transpose the inapproriate sample
-        if( imagesList[i].cols == 1 ) {
-            transpose( imagesList[i], tmp );
+        if( measurementsList[i].cols == 1 ) {
+            transpose( measurementsList[i], tmp );
+            cout << "transposed" << endl;
             tmp.copyTo( trainData.row( (int)i ) );
-        } else if( imagesList[i].rows == 1 ) {
-            imagesList[i].copyTo( trainData.row( (int)i ) );
+        } else if( measurementsList[i].rows == 1 ) {
+            measurementsList[i].copyTo( trainData.row( (int)i ) );
         }
     }
 }
@@ -155,23 +164,39 @@ int main(int argc, char** argv) {
 	
 	loadImages(imagesList, filePaths, imageWidth, imageHeight, labels);
 	computeFacialMeasurement(model, modeltxt, imagesList, measurementsList, showProgress);
+	//for (int i=0; i < measurementsList.size(); i++) {
+	//	cout << measurementsList[i] << endl;
+	//}
+	
 	convert_to_ml(measurementsList, trainData );
 	
     clog << "Training SVM...";
     Ptr< SVM > svm = SVM::create();
     /* Default values to train SVM */
     
-    svm->setCoef0( 0.0 );
-    svm->setDegree( 3 );
-    svm->setTermCriteria( TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 1000, 1e-3 ) );
-    svm->setGamma( 0 );
-    svm->setKernel( SVM::LINEAR );
+   	svm->setCoef0( 0.01 );
+    svm->setDegree( 5 );
+    //svm->setTermCriteria( TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 100000, 1e-6 ) );
+    svm->setGamma(1500);
+    svm->setKernel( SVM::RBF );
     svm->setNu( 0.5 );
     svm->setP( 0.1 ); // for EPSILON_SVR, epsilon in loss function?
-    svm->setC( 0.01 ); // From paper, soft classifier
-    svm->setType( SVM::EPS_SVR ); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
+    svm->setC( 1000000 ); // From paper, soft classifier
+    svm->setType( SVM::C_SVC ); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
+
     svm->train( trainData, ROW_SAMPLE, labels );
     clog << "...[done]" << endl;
+    
+    cout << "Test the trained SVM" << endl;
+    Mat results;
+    cout << svm->predict(trainData.row(5), results) << endl;
+    cout << results << endl;
+    cout << svm->predict(trainData.row(248), results) << endl;
+    cout << results << endl;
+    cout << svm->predict(trainData.row(857), results) << endl;
+    cout << results << endl;
+    
+    
     
     // Save the model after training
     svm->save(svmFileName);
