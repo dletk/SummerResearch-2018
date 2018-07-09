@@ -95,8 +95,7 @@ void alignImage(Mat image, dlib::full_object_detection detectedMarks, String fil
 	fromPoints.push_back(point3);
 	
 	warpAffine(image, image, getAffineTransform(fromPoints, landmarksPositions), Size(176,192), INTER_CUBIC);
-	
-	
+
 	// Only export the aligned image to file if creating data
 	if (isCreatingData) {
 		imwrite(exportedDir+file, image);
@@ -105,8 +104,9 @@ void alignImage(Mat image, dlib::full_object_detection detectedMarks, String fil
 	Mat inputBlob = dnn::blobFromImage(image);   //Convert Mat to dnn::Blob image batch
     neuralNet.setInput(inputBlob);        //set the network input
 	Mat outMeasurement = neuralNet.forward();
-	
-	cout << svmFaceRecognition->predict(outMeasurement) << endl;
+	Mat results;
+	svmFaceRecognition->predict(outMeasurement, results);
+	cout << results << endl;
 }
 
 // The method to find 68 facial landmarks from a list of detected faces

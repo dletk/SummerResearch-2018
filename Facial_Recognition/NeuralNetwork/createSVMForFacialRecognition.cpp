@@ -77,7 +77,7 @@ void computeFacialMeasurement(String model, String modeltxt, vector<Mat> &images
     	Mat output = net.forward();
     	//cout << output << endl;
     	// Normalize the measurement
-    	//cuda::normalize(output, output, 0, 1, NORM_MINMAX,-1);
+    	cuda::normalize(output, output, 0, 1, NORM_MINMAX,-1);
     	
     	// Save the measurement, NOTICE: THE OUTPUT MAT WILL BE REUSED EVEN IT IS CREATED EVERYTIME, SO DO A CLONE TO COPY THE DATA
     	measurementsList.push_back(output.clone());
@@ -137,6 +137,8 @@ int main(int argc, char** argv) {
 		"{width           |176        | image width}"
 		"{height          |192        | image height}"
 		"{svmFileName     |faceSVM.yml| name of the file to save the trained SVM}"
+		"{testing         |false      | test a trained SVM}"
+		"{testImage       |           | test file}"
 	};
 	
 	CommandLineParser parser(argc, argv, keys);
@@ -153,51 +155,68 @@ int main(int argc, char** argv) {
 	int imageWidth = parser.get<int>("width");
 	int imageHeight = parser.get<int>("height");
 	String svmFileName = parser.get<String>("svmFileName");
+	bool testing = parser.get<bool>("testing");
+	String testImage = parser.get<String>("testImage");
 	
-	vector<Mat> imagesList;
-	vector<String> filePaths;
-	vector<Mat> measurementsList;
-	vector<int> labels;
-	Mat trainData;
+	if (!testing) {
+		vector<Mat> imagesList;
+		vector<String> filePaths;
+		vector<Mat> measurementsList;
+		vector<int> labels;
+		Mat trainData;
 	
-	glob(directoryPath, filePaths);
+		glob(directoryPath, filePaths);
 	
-	loadImages(imagesList, filePaths, imageWidth, imageHeight, labels);
-	computeFacialMeasurement(model, modeltxt, imagesList, measurementsList, showProgress);
-	//for (int i=0; i < measurementsList.size(); i++) {
-	//	cout << measurementsList[i] << endl;
-	//}
+		loadImages(imagesList, filePaths, imageWidth, imageHeight, labels);
+		computeFacialMeasurement(model, modeltxt, imagesList, measurementsList, showProgress);
+		for (int i=0; i < measurementsList.size(); i++) {
+			cout << measurementsList[i] << endl;
+		}
 	
-	convert_to_ml(measurementsList, trainData );
+		convert_to_ml(measurementsList, trainData );
 	
-    clog << "Training SVM...";
-    Ptr< SVM > svm = SVM::create();
-    /* Default values to train SVM */
-    
-   	svm->setCoef0( 0.01 );
-    svm->setDegree( 5 );
-    //svm->setTermCriteria( TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 100000, 1e-6 ) );
-    svm->setGamma(1500);
-    svm->setKernel( SVM::RBF );
-    svm->setNu( 0.5 );
-    svm->setP( 0.1 ); // for EPSILON_SVR, epsilon in loss function?
-    svm->setC( 1000000 ); // From paper, soft classifier
-    svm->setType( SVM::C_SVC ); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
+		clog << "Training SVM...";
+		Ptr< SVM > svm = SVM::create();
+		/* Default values to train SVM */
+		
+	   	svm->setCoef0( 0.01 );
+		svm->setDegree( 5 );
+		//svm->setTermCriteria( TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 100000, 1e-6 ) );
+		svm->setGamma(0.05);
+		svm->setKernel( SVM::RBF );
+		svm->setNu( 0.5 );
+		svm->setP( 0.1 ); // for EPSILON_SVR, epsilon in loss function?
+		svm->setC( 0.05 ); // From paper, soft classifier
+		svm->setType( SVM::C_SVC ); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
 
-    svm->train( trainData, ROW_SAMPLE, labels );
-    clog << "...[done]" << endl;
-    
-    cout << "Test the trained SVM" << endl;
-    Mat results;
-    cout << svm->predict(trainData.row(5), results) << endl;
-    cout << results << endl;
-    cout << svm->predict(trainData.row(248), results) << endl;
-    cout << results << endl;
-    cout << svm->predict(trainData.row(857), results) << endl;
-    cout << results << endl;
-    
-    
-    
-    // Save the model after training
-    svm->save(svmFileName);
+		svm->train( trainData, ROW_SAMPLE, labels );
+		clog << "...[done]" << endl;
+		
+		// Save the model after training
+		svm->save(svmFileName);
+    } else {
+		cout << "Test the trained SVM" << endl;
+		Mat results;
+		Mat image = imread(testImage, IMREAD_GRAYSCALE);
+		
+		if (image.empty()) {
+			cout << "Bad image" << endl;
+			exit(0);
+		}
+		
+		dnn::Net neuralNet = dnn::readNetFromTensorflow(model, modeltxt);
+		
+		cout << "Loaded neural net" << endl;
+		
+		Mat inputBlob = dnn::blobFromImage(image);   //Convert Mat to dnn::Blob image batch
+    	neuralNet.setInput(inputBlob);        	//set the network input
+    	
+    	cout << "Created blob from image" << endl;
+		Mat outMeasurement = neuralNet.forward();
+		cout << "Computed measurment"<< endl;
+		Ptr< SVM > svm = SVM::load(svmFileName);
+		cout << "Loaded SVM" << endl;
+		cout << svm->predict(outMeasurement, results) << endl;
+		cout << results << endl;
+	}
 }

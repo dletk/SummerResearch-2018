@@ -25,6 +25,7 @@ int main(int argc, char** argv) {
 	
 	cv::dnn::Net net = cv::dnn::readNetFromTensorflow(model, modeltxt);
 	
+	
 	if (!net.empty()) {
 		cout << "Loaded network successfully" << endl;
 	}

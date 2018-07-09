@@ -301,7 +301,7 @@ node {
   input: "dense_2/bias"
 }
 node {
-  name: "dense_2/Relu"
-  op: "Relu"
+  name: "dense_2/Sigmoid"
+  op: "Sigmoid"
   input: "dense_2/BiasAdd"
 }
