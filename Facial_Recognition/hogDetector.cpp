@@ -105,7 +105,7 @@ void alignImage(Mat image, dlib::full_object_detection detectedMarks, String fil
     neuralNet.setInput(inputBlob);        //set the network input
 	Mat outMeasurement = neuralNet.forward();
 	Mat results;
-	svmFaceRecognition->predict(outMeasurement, results);
+	cout << svmFaceRecognition->predict(outMeasurement, results) << endl;
 	cout << results << endl;
 }
 

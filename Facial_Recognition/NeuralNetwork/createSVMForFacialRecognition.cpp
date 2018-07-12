@@ -182,11 +182,11 @@ int main(int argc, char** argv) {
 	   	svm->setCoef0( 0.01 );
 		svm->setDegree( 5 );
 		//svm->setTermCriteria( TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 100000, 1e-6 ) );
-		svm->setGamma(0.05);
+		svm->setGamma(0.1);
 		svm->setKernel( SVM::RBF );
 		svm->setNu( 0.5 );
 		svm->setP( 0.1 ); // for EPSILON_SVR, epsilon in loss function?
-		svm->setC( 0.05 ); // From paper, soft classifier
+		svm->setC( 0.8 ); // From paper, soft classifier
 		svm->setType( SVM::C_SVC ); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
 
 		svm->train( trainData, ROW_SAMPLE, labels );

@@ -350,7 +350,7 @@ int main( int argc, char** argv )
     svm->setKernel( SVM::LINEAR );
     svm->setNu( 0.5 );
     svm->setP( 0.1 ); // for EPSILON_SVR, epsilon in loss function?
-    svm->setC( 0.01 ); // From paper, soft classifier
+    svm->setC( 0.05 ); // From paper, soft classifier
     svm->setType( SVM::EPS_SVR ); // C_SVC; // EPSILON_SVR; // may be also NU_SVR; // do regression task
     svm->train( train_data, ROW_SAMPLE, labels );
     clog << "...[done]" << endl;
