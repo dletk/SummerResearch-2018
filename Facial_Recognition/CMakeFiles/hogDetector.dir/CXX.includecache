@@ -25,6 +25,8 @@ stdio.h
 -
 chrono
 -
+fstream
+-
 dlib/image_processing/frontal_face_detector.h
 -
 dlib/image_processing/render_face_detections.h

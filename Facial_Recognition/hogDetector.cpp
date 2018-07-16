@@ -8,6 +8,7 @@
 #include<string>
 #include<stdio.h>
 #include<chrono>
+#include<fstream>
 
 #include <dlib/image_processing/frontal_face_detector.h>
 #include <dlib/image_processing/render_face_detections.h>
@@ -25,6 +26,8 @@ dlib::shape_predictor pose_model;
 vector<Point2f> landmarksPositions;
 
 bool isUsingCuda, isUsingImage, isCreatingData, displayOutput;
+bool isDetecting;
+
 int currentFrame;
 Mat originalImageGray;
 // Define the size of a face
@@ -33,15 +36,45 @@ dlib::rectangle faceSize(0, 0, 176, 192);
 // Variable to make prediction for face recognition
 dnn::Net neuralNet;
 Ptr< ml::SVM > svmFaceRecognition;
+vector<String> labels;
+vector<int> detectedLabels;
 
 
-void prepareFacialRecognition(String model, String modeltxt, String svmFaceRegPath) {
+void prepareFacialRecognition(String model, String modeltxt, String svmFaceRegPath, String labelsFile) {
 	cout << "Begin to load models and neural network for facial recognition" << endl;
 	// Load the neural network
 	neuralNet = dnn::readNetFromTensorflow(model, modeltxt);
 	// Load the SVM for facial recognition
 	svmFaceRecognition = ml::SVM::load(svmFaceRegPath);
 	cout << "Loaded neural network and facial recognition SVM" << endl;
+	
+	// Load the labels for the SVM
+	// The labels from our SVM is 1-216, so make the 0 element be an empty string.
+	labels.push_back("");
+	// Open the file
+	ifstream file(labelsFile);
+	string aLabel;
+	if (file.is_open()) {
+		while (getline(file, aLabel)) {
+			cout << aLabel << endl;
+			labels.push_back(String(aLabel));
+		}
+		file.close();
+	}
+	
+	for(int i=0;i<labels.size();i++) {
+		cout << labels[i] << endl;
+	}
+}
+
+// Method to predict the individual
+int predictIndividual(Mat image) {
+	Mat inputBlob = dnn::blobFromImage(image);   //Convert Mat to dnn::Blob image batch
+    neuralNet.setInput(inputBlob);        //set the network input
+	Mat outMeasurement = neuralNet.forward();
+	Mat results;
+	svmFaceRecognition->predict(outMeasurement, results);
+	return (int) results.at<float>(0,0);
 }
 
 
@@ -83,7 +116,7 @@ void createReferenceFace(Mat referenceImage) {
 }
 
 // Method to align facial landmarks to match the positions in reference image using affine transformation 
-void alignImage(Mat image, dlib::full_object_detection detectedMarks, String file) {
+Mat alignImageAndPredict(Mat image, dlib::full_object_detection detectedMarks, String file) {
 	vector<Point2f> fromPoints;
 	
 	Point2f point1((float) detectedMarks.part(36).x(), (float) detectedMarks.part(36).y());
@@ -101,35 +134,32 @@ void alignImage(Mat image, dlib::full_object_detection detectedMarks, String fil
 		imwrite(exportedDir+file, image);
 	}
 	
-	Mat inputBlob = dnn::blobFromImage(image);   //Convert Mat to dnn::Blob image batch
-    neuralNet.setInput(inputBlob);        //set the network input
-	Mat outMeasurement = neuralNet.forward();
-	Mat results;
-	cout << svmFaceRecognition->predict(outMeasurement, results) << endl;
-	cout << results << endl;
+	return image;
 }
 
 // The method to find 68 facial landmarks from a list of detected faces
 void findLandmarks(Mat image, vector<Rect> faces, String file) {
+	if (isDetecting) {
+		detectedLabels.clear();
+		for (Rect rect: faces) {
+			// Crop the face out of the original image and resize it to the desired size
+			Mat faceRegion = originalImageGray(rect);
+			resize(faceRegion, faceRegion, Size(176,192));
+		
+			// Convert the openCV image to dlib image
+			dlib::cv_image<unsigned char> regionImage(faceRegion);
+		
+			// Detect the facial landmarks in the current bounding box
+			dlib::full_object_detection shape = pose_model(regionImage, faceSize);
+			int index = predictIndividual(alignImageAndPredict(faceRegion, shape, file));
+			cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
+			cout << "Size of face: " << rect.size() << endl;
+			detectedLabels.push_back(index);
+		}
+	}
+	
 	// Convert the openCV image to dlib image
 	dlib::cv_image<dlib::bgr_pixel> cvImage(image);
-	
-	for (Rect rect: faces) {
-		// Crop the face out of the original image and resize it to the desired size
-		Mat faceRegion = originalImageGray(rect);
-		resize(faceRegion, faceRegion, Size(176,192));
-		
-		// Convert the openCV image to dlib image
-		dlib::cv_image<unsigned char> regionImage(faceRegion);
-		
-		// Detect the facial landmarks in the current bounding box
-		dlib::full_object_detection shape = pose_model(regionImage, faceSize);
-
-		alignImage(faceRegion, shape, file);
-		
-		cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
-		cout << "Size of face: " << rect.size() << endl;
-	}
 	
 	// Display it all on the screen
 	if (!isCreatingData) {
@@ -149,6 +179,7 @@ void findLandmarks(Mat image, vector<Rect> faces, String file) {
 // Method to draw a rectangle box around the detected object on the image
 void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidences, double max, String file=String()) {
 	int i = 0;
+	
 	// Loop through all detected faces in the image
 	for(Rect rect: foundLocations) {
 		// If confidences is available, display detected regions based on their probability
@@ -158,10 +189,14 @@ void drawPeople(Mat image, vector<Rect> foundLocations, vector<double> confidenc
 			if (confidences.at(i) == max) {
 				rectangle(image, Point(rect.x, rect.y), Point(rect.x+rect.width, rect.y+rect.height), Scalar(255,0,0));
 			}
-			i++;
 		} else {
 			rectangle(image, Point(rect.x, rect.y), Point(rect.x+rect.width, rect.y+rect.height), Scalar(255,0,0));
+			if (i<detectedLabels.size()) {
+				putText(image, labels[detectedLabels[i]], Point(rect.x, rect.y), FONT_HERSHEY_PLAIN, 1.0, CV_RGB(0,255,0), 2.0);
+				cout << labels[detectedLabels[i]] << endl;
+			}
 		}
+		i++;
 	}
 	
 	findLandmarks(image, foundLocations, file);
@@ -189,6 +224,7 @@ int main(int argc, char** argv) {
 		"{neuralNetModel  |model.pb                 | the .pb model file to load the network weight}"
 		"{neuralNetText   |model.pbtxt              | the .pbtxt file to load model structure}"
 		"{faceSVM         |faceSVM.yml              | name of the file to save the trained SVM}"
+		"{labelsFile      |labels.txt               | file path to the labels file}"
 	};
 	
 	CommandLineParser parser(argc, argv, keys);
@@ -219,6 +255,7 @@ int main(int argc, char** argv) {
 	String neuralNetModel = parser.get<String>("neuralNetModel");
 	String neuralNetText = parser.get<String>("neuralNetText");
 	String faceSVM = parser.get<String>("faceSVM");
+	String labelsFile = parser.get<String>("labelsFile");
 	
 	
 	// Getting all the images in the directory of imagePath if using static images
@@ -321,7 +358,7 @@ int main(int argc, char** argv) {
 	
 	
 	// Prepare models and neural network for facial recognition step
-	prepareFacialRecognition(neuralNetModel, neuralNetText, faceSVM);
+	prepareFacialRecognition(neuralNetModel, neuralNetText, faceSVM, labelsFile);
 	
 	// Using a static image as input instead of a video stream
 	if (isUsingImage) {
@@ -375,8 +412,10 @@ int main(int argc, char** argv) {
 		auto time2 = chrono::system_clock::now();
 		
 		// ONly do the detection every 2 frames
-		if (currentFrame % 5 == 0) {
-		
+		if (currentFrame % 3 == 0) {
+			// Using isDetecting to make sure the detection only happen once every 5 frames
+			isDetecting = true;
+			
 			// Detect the object and store the location of objects into vector<rect>
 			if (isUsingCuda) {
 				// Convert the image into grayImage for the CUDA detector version
@@ -403,6 +442,8 @@ int main(int argc, char** argv) {
 			drawPeople(image, foundLocations, confidences, 0.0);
 		}
 		
+		// Turn off isDetecting after each frame
+		isDetecting = false;
 		currentFrame += 1;
 
 		auto time4 = chrono::system_clock::now();
