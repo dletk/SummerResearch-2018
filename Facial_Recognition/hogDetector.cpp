@@ -71,7 +71,13 @@ void prepareFacialRecognition(String model, String modeltxt, String svmFaceRegPa
 int predictIndividual(Mat image) {
 	Mat inputBlob = dnn::blobFromImage(image);   //Convert Mat to dnn::Blob image batch
     neuralNet.setInput(inputBlob);        //set the network input
+    
+    auto timeBegin = chrono::system_clock::now();
 	Mat outMeasurement = neuralNet.forward();
+	auto timeEnd = chrono::system_clock::now();
+	chrono::duration<double> timeNetwork = timeEnd - timeBegin;
+	cout << "--- Network time: " << timeNetwork.count() << endl;
+	
 	Mat results;
 	svmFaceRecognition->predict(outMeasurement, results);
 	return (int) results.at<float>(0,0);
@@ -151,7 +157,12 @@ void findLandmarks(Mat image, vector<Rect> faces, String file) {
 		
 			// Detect the facial landmarks in the current bounding box
 			dlib::full_object_detection shape = pose_model(regionImage, faceSize);
+			auto timeBegin = chrono::system_clock::now();
 			int index = predictIndividual(alignImageAndPredict(faceRegion, shape, file));
+			auto timeEnd = chrono::system_clock::now();
+			chrono::duration<double> timePredict = timeEnd - timeBegin;
+			
+			cout << "Time of prediction: " << timePredict.count() << endl;
 			cout << "NUMBER OF DETECTED LANDMARKS: " << shape.num_parts() << endl;
 			cout << "Size of face: " << rect.size() << endl;
 			detectedLabels.push_back(index);
